@@ -2,7 +2,8 @@
   {
     "filename": "GPOsettings8.json",
     "ownerID": "1771165208270",
-    "OwnerUsername": "tee"
+    "OwnerUsername": "tee",
+    "visibility": "private"
   },
   {
     "filename": "ตำราดวงจีน เล่มปรับปรุงเนื้อหา.pdf",
@@ -12,12 +13,14 @@
   {
     "filename": "workshop4.zip",
     "ownerID": "1771165208270",
-    "OwnerUsername": "tee"
+    "OwnerUsername": "tee",
+    "visibility": "private"
   },
   {
     "filename": "626290692_1617780265920826_4532897088165381231_n.jpg",
     "ownerID": "1771165208270",
-    "OwnerUsername": "tee"
+    "OwnerUsername": "tee",
+    "visibility": "private"
   },
   {
     "filename": "gojo-satoru-hd-bloodied.png",

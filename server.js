@@ -56,7 +56,7 @@ const storage = multer.diskStorage({
     // แยกโฟลเดอร์ตาม User ID เพื่อความเป็นระเบียบ
     const userId = req.headers["user-id"];
     const userDir = path.join(UPLOAD_DIR, userId);
-    
+
     if (!fs.existsSync(userDir)) {
       fs.mkdirSync(userDir, { recursive: true });
     }
@@ -110,7 +110,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
     ownerID: ownerId,
     OwnerUsername: ownerName // สำคัญสำหรับ Admin Grouping
   };
-  
+
   saveFileRecord(newFileRecord);
 
   res.json({ message: "File uploaded successfully!" });
@@ -121,8 +121,7 @@ app.get("/files", (req, res) => {
   const { role, username } = req.query;
   const allFiles = getFileRecords();
   const users = getUsers();
-  
-  // หา User object เพื่อเอา ID (กรณีส่งมาแต่ username)
+
   const currentUser = users.find(u => u.username === username);
   const currentId = currentUser ? currentUser.id : null;
 
@@ -130,9 +129,43 @@ app.get("/files", (req, res) => {
     // Admin เห็นทั้งหมด
     res.json(allFiles);
   } else {
-    // User เห็นแค่ของตัวเอง
-    const myFiles = allFiles.filter((f) => String(f.ownerID) === String(currentId));
-    res.json(myFiles);
+    // User sees: Own files OR Public files OR Files shared with them
+    const accessibleFiles = allFiles.filter((f) => {
+      const isOwner = String(f.ownerID) === String(currentId);
+      const isPublic = f.visibility === 'public';
+      const isSharedWithMe = f.sharedWith && f.sharedWith.includes(String(currentId));
+
+      return isOwner || isPublic || isSharedWithMe;
+    });
+    res.json(accessibleFiles);
+  }
+});
+
+// API Get Users (For Admin Share Modal)
+app.get("/users", (req, res) => {
+  const users = getUsers();
+  // ส่งไปเฉพาะ ID, Username, Role (ไม่ส่ง Password)
+  const safeUsers = users.map(u => ({ id: u.id, username: u.username, role: u.role }));
+  res.json(safeUsers);
+});
+
+// API Update Share Settings (Public/Private + Specific Users)
+app.patch("/files/share", (req, res) => {
+  const { ownerId, filename, isPublic, sharedWith } = req.body;
+  let records = getFileRecords();
+
+  // Find record by filename AND ownerId
+  const index = records.findIndex(r => r.filename === filename && String(r.ownerID) === String(ownerId));
+
+  if (index !== -1) {
+    records[index].visibility = isPublic ? 'public' : 'private';
+    // Ensure sharedWith is an array of strings
+    records[index].sharedWith = sharedWith || [];
+
+    fs.writeFileSync(FILES_RECORD, JSON.stringify(records, null, 2));
+    res.json({ success: true, message: "Sharing settings updated" });
+  } else {
+    res.status(404).json({ success: false, message: "File record not found" });
   }
 });
 
@@ -146,10 +179,10 @@ app.get("/preview/:userId/:filename", (req, res) => {
   } else {
     // Fallback กรณีหาไม่เจอ (เผื่อไฟล์เก่าที่ไม่ได้อยู่ใน subfolder)
     const fallbackPath = path.join(__dirname, "uploads", filename);
-    if(fs.existsSync(fallbackPath)){
-        res.sendFile(fallbackPath);
+    if (fs.existsSync(fallbackPath)) {
+      res.sendFile(fallbackPath);
     } else {
-        res.status(404).send("File not found");
+      res.status(404).send("File not found");
     }
   }
 });
@@ -158,17 +191,17 @@ app.get("/preview/:userId/:filename", (req, res) => {
 app.get("/download/:userId/:filename", (req, res) => {
   const { userId, filename } = req.params;
   const filePath = path.join(__dirname, "uploads", userId, filename);
-  
+
   if (fs.existsSync(filePath)) {
     res.download(filePath, filename);
   } else {
-      // Fallback
-      const fallbackPath = path.join(__dirname, "uploads", filename);
-      if(fs.existsSync(fallbackPath)){
-          res.download(fallbackPath, filename);
-      } else {
-          res.status(404).send("File not found");
-      }
+    // Fallback
+    const fallbackPath = path.join(__dirname, "uploads", filename);
+    if (fs.existsSync(fallbackPath)) {
+      res.download(fallbackPath, filename);
+    } else {
+      res.status(404).send("File not found");
+    }
   }
 });
 

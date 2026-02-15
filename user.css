@@ -19,7 +19,8 @@ body {
 }
 
 /* Form Elements */
-input, button {
+input,
+button {
     margin: 10px 0;
     padding: 12px;
     width: 100%;

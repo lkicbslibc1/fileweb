@@ -33,14 +33,22 @@
     </div>
 
     <div id="appSection" class="hidden">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
         <h3 id="welcomeMsg" style="margin: 0; text-align: left;">Welcome</h3>
         <button onclick="logout()" class="secondary-btn" style="width: auto; padding: 8px 20px; margin: 0">
           <i class="fas fa-sign-out-alt"></i> Logout
         </button>
       </div>
 
-      <div style="background: #f8fafc; padding: 20px; border-radius: 10px; border: 2px dashed #cbd5e1;">
+      <div id="adminSearchSection" class="hidden" style="margin-bottom: 20px;">
+        <h5>Search User (Admin Only)</h5>
+        <input type="text" id="searchInput" onkeyup="searchUser()" placeholder="Type username..."
+          style="padding: 5px; width: 100%; max-width: 300px;">
+      </div>
+
+      <div id="uploadSection"
+        style="background: #f8fafc; padding: 20px; border-radius: 10px; border: 2px dashed #cbd5e1;">
         <h5 style="margin-top: 0; margin-bottom: 15px; color: #64748b;">Upload New File</h5>
         <input type="file" id="fileInput" style="background: white;" />
         <div id="previewUpload" style="margin: 10px 0;"></div>
@@ -51,10 +59,192 @@
       <h3 style="text-align: left; margin-top: 40px; border-left: 5px solid #3b82f6; padding-left: 10px;">
         <i class="fas fa-folder-open"></i> File Storage
       </h3>
-      
-      <div id="fileList"></div> 
+
+      <!-- Container for File List -->
+      <!-- Container for File List -->
+      <div id="fileList"></div>
     </div>
   </div>
+
+  <!-- Share Modal -->
+  <div id="shareModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-share-alt"></i> Share File</h3>
+        <button onclick="closeShareModal()" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="shareFileName" style="font-weight:bold; color:#3b82f6; margin-bottom:15px;"></p>
+
+        <label class="toggle-switch">
+          <input type="checkbox" id="publicCheckbox" onchange="togglePublicOption()">
+          <span class="slider"></span>
+          <span class="label-text">Public (Everyone can see)</span>
+        </label>
+
+        <div id="userSelectionArea" style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+          <p style="font-size:0.9rem; margin-bottom:10px;">Or select specific users:</p>
+          <div id="userListCheckbox" class="user-checkbox-list">
+            <!-- Checkboxes will be injected here -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="saveShareSettings()" class="save-btn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .user-group-header {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .user-group-header:hover {
+      background-color: #f0f0f0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .save-btn {
+      width: 100%;
+      background: #3b82f6;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 15px;
+    }
+
+    .save-btn:hover {
+      background: #2563eb;
+    }
+
+    .user-checkbox-list {
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .user-checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .user-checkbox-item:hover {
+      background: #f8fafc;
+    }
+
+
+    /* Toggle Switch */
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      gap: 10px;
+    }
+
+    .toggle-switch input {
+      display: none;
+    }
+
+    .slider {
+      position: relative;
+      width: 40px;
+      height: 20px;
+      background-color: #ccc;
+      border-radius: 20px;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: #2196F3;
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(20px);
+    }
+  </style>
+
+  <style>
+    .user-group-header {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .user-group-header:hover {
+      background-color: #f0f0f0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
 
   <script>
     const serverUrl = "http://localhost:5000";
@@ -72,13 +262,13 @@
       document.getElementById("loginSection").classList.add("hidden");
       document.getElementById("registerSection").classList.add("hidden");
       document.getElementById("appSection").classList.remove("hidden");
-      
+
       const badgeColor = currentRole === 'admin' ? '#ef4444' : '#3b82f6';
       document.getElementById("welcomeMsg").innerHTML = `
         <div style="font-size: 1.2rem;">Hello, <span style="font-weight:bold;">${currentUser}</span></div>
         <span style="background:${badgeColor}; color:white; padding:2px 8px; border-radius:4px; font-size:0.75rem; text-transform:uppercase;">${currentRole}</span>
       `;
-      
+
       loadFileList();
     }
 
@@ -102,17 +292,17 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass }),
       })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          alert("Registration successful! Please log in.");
-          showLogin();
-          document.getElementById("regUser").value = "";
-          document.getElementById("regPass").value = "";
-        } else {
-          alert(data.message);
-        }
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            alert("Registration successful! Please log in.");
+            showLogin();
+            document.getElementById("regUser").value = "";
+            document.getElementById("regPass").value = "";
+          } else {
+            alert(data.message);
+          }
+        });
     }
 
     function login() {
@@ -124,22 +314,22 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass }),
       })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          localStorage.setItem("id", data.id);
-          localStorage.setItem("username", data.username);
-          localStorage.setItem("role", data.role);
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            localStorage.setItem("id", data.id);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("role", data.role);
 
-          currentId = data.id;
-          currentUser = data.username;
-          currentRole = data.role;
+            currentId = data.id;
+            currentUser = data.username;
+            currentRole = data.role;
 
-          showApp();
-        } else {
-          alert(data.message);
-        }
-      });
+            showApp();
+          } else {
+            alert(data.message);
+          }
+        });
     }
 
     function logout() {
@@ -168,20 +358,44 @@
         body: formData,
         headers: { "user-id": currentId }
       })
-      .then(res => res.json())
-      .then(data => {
-        status.style.color = "green";
-        status.innerText = "✅ " + data.message;
-        fileInput.value = ""; 
-        document.getElementById("previewUpload").innerHTML = "";
-        loadFileList(); 
-        
-        // Clear status text after 3 seconds
-        setTimeout(() => { status.innerText = ""; }, 3000);
-      })
-      .catch(err => {
-        status.style.color = "red";
-        status.innerText = "❌ Upload Failed";
+        .then(res => res.json())
+        .then(data => {
+          status.style.color = "green";
+          status.innerText = "✅ " + data.message;
+          fileInput.value = "";
+          document.getElementById("previewUpload").innerHTML = "";
+          loadFileList();
+
+          // Clear status text after 3 seconds
+          setTimeout(() => { status.innerText = ""; }, 3000);
+        })
+        .catch(err => {
+          status.style.color = "red";
+          status.innerText = "❌ Upload Failed";
+        });
+    }
+
+    // --- Search functionality ---
+    function searchUser() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      // Select all user containers (header + list)
+      // Since the current structure is flat (Header, UL, Header, UL...), we need to iterate carefully or wrap them.
+      // Actually, let's look at how I'm rendering it below. I should probably WRAP them in a div to make searching/hiding easier.
+      // But the user said "don't change original code too much".
+      // Let's try to just hide the Header and the following UL.
+
+      const headers = document.querySelectorAll(".user-group-header");
+      headers.forEach(header => {
+        const username = header.innerText.toLowerCase();
+        const list = header.nextElementSibling;
+
+        if (username.includes(input)) {
+          header.style.display = "flex"; // Restore flex layout
+          if (list) list.style.display = "grid"; // Restore grid
+        } else {
+          header.style.display = "none";
+          if (list) list.style.display = "none";
+        }
       });
     }
 
@@ -192,7 +406,7 @@
         .then((files) => {
           const container = document.getElementById("fileList");
           container.innerHTML = "";
-          
+
           if (files.length === 0) {
             container.innerHTML = `
               <div style="text-align:center; padding: 40px; color:#94a3b8;">
@@ -204,7 +418,13 @@
 
           // === กรณีเป็น ADMIN: จัดกลุ่มตาม User ===
           if (currentRole === 'admin') {
-            
+
+            // Hide Upload Section if it exists (Safety check)
+            const uploadSection = document.getElementById("uploadSection");
+            const searchSection = document.getElementById("adminSearchSection");
+            if (uploadSection) uploadSection.classList.add("hidden");
+            if (searchSection) searchSection.classList.remove("hidden");
+
             // 1. Group Data
             const filesByUser = {};
             files.forEach(file => {
@@ -217,16 +437,18 @@
 
             // 2. Render Groups
             for (const [ownerName, userFiles] of Object.entries(filesByUser)) {
-              // Header
+              // Header with onclick for Collapse
+              // Added 'onclick' to toggle the next element (the list)
               const headerHTML = `
-                <div class="user-group-header">
+                <div class="user-group-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
                   <i class="fas fa-user-circle fa-lg"></i> 
                   <span>${ownerName}</span>
                   <span style="font-size:0.8rem; font-weight:normal; color:#64748b; margin-left:auto; background:white; padding:2px 8px; border-radius:10px;">
                     ${userFiles.length} files
                   </span>
+                  <i class="fas fa-chevron-down" style="margin-left: 10px;"></i>
                 </div>`;
-              
+
               // Grid List
               let fileListHTML = `<ul class="file-grid-view">`;
               userFiles.forEach(file => {
@@ -239,6 +461,12 @@
 
           } else {
             // === กรณีเป็น USER: แสดงรายการเดียว ===
+            // Show Upload Section
+            const uploadSection = document.getElementById("uploadSection");
+            const searchSection = document.getElementById("adminSearchSection");
+            if (uploadSection) uploadSection.classList.remove("hidden");
+            if (searchSection) searchSection.classList.add("hidden");
+
             let fileListHTML = `<ul class="file-grid-view">`;
             files.forEach(file => {
               fileListHTML += generateFileHtml(file);
@@ -249,28 +477,132 @@
         });
     }
 
+
+    // --- Share / Visibility Modal ---
+    let currentEditingFile = null;
+
+    function openShareModal(ownerId, filename, isPublic, sharedWithStr) {
+      currentEditingFile = { ownerId, filename };
+
+      const modal = document.getElementById("shareModal");
+      const title = document.getElementById("shareFileName");
+      const publicCb = document.getElementById("publicCheckbox");
+      const userListDiv = document.getElementById("userListCheckbox");
+
+      title.innerText = filename;
+      publicCb.checked = (isPublic === 'true');
+
+      // Parse sharedWithStr (which comes as a comma-separated string from the attribute)
+      const sharedWith = sharedWithStr ? sharedWithStr.split(',') : [];
+
+      // Fetch Users
+      fetch(`${serverUrl}/users`)
+        .then(res => res.json())
+        .then(users => {
+          userListDiv.innerHTML = "";
+          // Filter out the owner from the list (can't share with self)
+          const shareableUsers = users.filter(u => String(u.id) !== String(ownerId));
+
+          if (shareableUsers.length === 0) {
+            userListDiv.innerHTML = "<p style='color:#94a3b8; text-align:center;'>No other users to share with.</p>";
+          }
+
+          shareableUsers.forEach(u => {
+            const isChecked = sharedWith.includes(String(u.id));
+            const div = document.createElement("div");
+            div.className = "user-checkbox-item";
+            div.innerHTML = `
+                <input type="checkbox" value="${u.id}" class="user-share-checkbox" ${isChecked ? "checked" : ""}>
+                <span>${u.username}</span>
+             `;
+            userListDiv.appendChild(div);
+          });
+
+          togglePublicOption(); // Update UI state
+          modal.classList.remove("hidden");
+        });
+    }
+
+    function closeShareModal() {
+      document.getElementById("shareModal").classList.add("hidden");
+      currentEditingFile = null;
+    }
+
+    function togglePublicOption() {
+      const isPublic = document.getElementById("publicCheckbox").checked;
+      const userArea = document.getElementById("userSelectionArea");
+      if (isPublic) {
+        userArea.style.opacity = "0.5";
+        userArea.style.pointerEvents = "none";
+      } else {
+        userArea.style.opacity = "1";
+        userArea.style.pointerEvents = "auto";
+      }
+    }
+
+    function saveShareSettings() {
+      if (!currentEditingFile) return;
+
+      const isPublic = document.getElementById("publicCheckbox").checked;
+      const checkboxes = document.querySelectorAll(".user-share-checkbox:checked");
+      const sharedWith = Array.from(checkboxes).map(cb => cb.value);
+
+      fetch(`${serverUrl}/files/share`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ownerId: currentEditingFile.ownerId,
+          filename: currentEditingFile.filename,
+          isPublic: isPublic,
+          sharedWith: sharedWith
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            closeShareModal();
+            loadFileList();
+          } else {
+            alert("Error updating settings");
+          }
+        });
+    }
+
     // Helper: สร้าง HTML Card ของไฟล์
     function generateFileHtml(fileObj) {
       const f = fileObj.filename;
       const ownerId = fileObj.ownerID;
-      
+      const isPublic = fileObj.visibility === 'public';
+      const sharedWith = fileObj.sharedWith || [];
+      const isOwner = String(ownerId) === String(currentId);
+
+      // Status Badge
+      let statusBadge = "";
+      if (currentRole === 'admin' || isOwner) {
+        if (isPublic) {
+          statusBadge = `<span style="font-size:0.7rem; background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px;"><i class="fas fa-globe"></i> Public</span>`;
+        } else if (sharedWith.length > 0) {
+          statusBadge = `<span style="font-size:0.7rem; background:#e0f2fe; color:#075985; padding:2px 6px; border-radius:4px;"><i class="fas fa-user-friends"></i> Shared (${sharedWith.length})</span>`;
+        }
+      }
+
       const previewUrl = `${serverUrl}/preview/${ownerId}/${f}`;
       const downloadUrl = `${serverUrl}/download/${ownerId}/${f}`;
 
       const ext = f.split('.').pop().toLowerCase();
       const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
-      
+
       let thumbnailHtml = '';
 
       if (isImage) {
         thumbnailHtml = `<img src="${previewUrl}" class="file-thumb">`;
       } else {
         // Icon Mapping
-        let iconClass = "fa-file-alt"; 
-        let iconColor = "#94a3b8";   
-        if (ext === 'pdf') { iconClass = "fa-file-pdf"; iconColor = "#ef4444"; } 
-        else if (['mp3', 'wav', 'ogg'].includes(ext)) { iconClass = "fa-file-audio"; iconColor = "#f59e0b"; } 
-        else if (['mp4', 'mov', 'avi'].includes(ext)) { iconClass = "fa-file-video"; iconColor = "#3b82f6"; } 
+        let iconClass = "fa-file-alt";
+        let iconColor = "#94a3b8";
+        if (ext === 'pdf') { iconClass = "fa-file-pdf"; iconColor = "#ef4444"; }
+        else if (['mp3', 'wav', 'ogg'].includes(ext)) { iconClass = "fa-file-audio"; iconColor = "#f59e0b"; }
+        else if (['mp4', 'mov', 'avi'].includes(ext)) { iconClass = "fa-file-video"; iconColor = "#3b82f6"; }
         else if (['zip', 'rar', '7z'].includes(ext)) { iconClass = "fa-file-archive"; iconColor = "#8b5cf6"; }
         else if (['doc', 'docx'].includes(ext)) { iconClass = "fa-file-word"; iconColor = "#2563eb"; }
         else if (['xls', 'xlsx'].includes(ext)) { iconClass = "fa-file-excel"; iconColor = "#16a34a"; }
@@ -278,16 +610,61 @@
         thumbnailHtml = `<div class="file-icon" style="color: ${iconColor};"><i class="fas ${iconClass}"></i></div>`;
       }
 
+      // Action Buttons Logic
+      let actionButtons = `
+            <a href="${downloadUrl}" download class="btn-download">
+              <i class="fas fa-download"></i> Download
+            </a>`;
+
+      // Admin Controls: Share + Delete (No Eye Button)
+      if (currentRole === 'admin') {
+        // Serialize sharedWith array to string for passing to onclick
+        const sharedStr = sharedWith.join(',');
+
+        actionButtons += `
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <button onclick="openShareModal('${ownerId}', '${f}', '${isPublic}', '${sharedStr}')" 
+                    title="Share File"
+                    style="flex:1; background:none; border:1px solid #e2e8f0; border-radius:4px; cursor:pointer; color:#3b82f6;">
+                    <i class="fas fa-user-plus"></i> Share
+                </button>
+                <button onclick="deleteFile('${ownerId}', '${f}')" 
+                    title="Delete File"
+                    style="flex:1; background:none; border:1px solid #fee2e2; border-radius:4px; cursor:pointer; color:#ef4444;">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+          `;
+      } else if (isOwner) {
+        actionButtons += `
+            <div style="margin-top:5px;">
+                <button onclick="deleteFile('${ownerId}', '${f}')" 
+                    style="width:100%; background:none; border:1px solid #fee2e2; border-radius:4px; cursor:pointer; color:#ef4444; padding: 4px;">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+            </div>
+          `;
+      } else {
+        // View Only
+        actionButtons += `
+            <div style="margin-top:5px; text-align:center; font-size:0.8rem; color:#64748b;">
+                <i class="fas fa-share-square"></i> Shared with you
+            </div>
+          `;
+      }
+
       return `
         <li class="file-card">
           <div class="file-preview-container">${thumbnailHtml}</div>
           <div class="file-info">
             <span class="file-name" title="${f}">${f}</span>
+            <div style="margin-top:2px;">
+                ${statusBadge}
+                ${!isOwner && currentRole !== 'admin' ? `<span style="font-size:0.7rem; color:#888;">by ${fileObj.OwnerUsername || 'Unknown'}</span>` : ''}
+            </div>
           </div>
-          <div class="file-actions">
-            <a href="${downloadUrl}" download class="btn-download">
-              <i class="fas fa-download"></i> Download
-            </a>
+          <div class="file-actions" style="flex-direction:column; align-items:stretch;">
+            ${actionButtons}
           </div>
         </li>`;
     }
@@ -297,7 +674,7 @@
       const file = e.target.files[0];
       const previewArea = document.getElementById('previewUpload');
       previewArea.innerHTML = "";
-      
+
       if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = function (event) {
@@ -308,4 +685,5 @@
     });
   </script>
 </body>
+
 </html>
