@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "username": "admin",
+    "password": "123",
+    "role": "admin"
+  },
+  {
+    "id": 1771081318228,
+    "username": "mook",
+    "password": "123",
+    "role": "user"
+  },
+  {
+    "id": 1771081326810,
+    "username": "mook2",
+    "password": "123",
+    "role": "user"
+  },
+  {
+    "id": 1771165208270,
+    "username": "tee",
+    "password": "123",
+    "role": "user"
+  }
+]
