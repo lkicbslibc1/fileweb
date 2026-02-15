@@ -568,6 +568,27 @@
         });
     }
 
+    // ฟังก์ชันลบไฟล์
+    function deleteFile(ownerId, filename) {
+      if (!confirm(`Are you sure you want to delete "${filename}"?`)) return;
+
+      fetch(`${serverUrl}/files`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId, filename })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("File deleted successfully");
+            loadFileList();
+          } else {
+            alert("Failed to delete file: " + data.message);
+          }
+        })
+        .catch(err => alert("Error deleting file"));
+    }
+
     // Helper: สร้าง HTML Card ของไฟล์
     function generateFileHtml(fileObj) {
       const f = fileObj.filename;

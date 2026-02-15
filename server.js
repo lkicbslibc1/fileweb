@@ -205,6 +205,35 @@ app.get("/download/:userId/:filename", (req, res) => {
   }
 });
 
+// 7. Delete File
+app.delete("/files", (req, res) => {
+  const { ownerId, filename } = req.body;
+  let records = getFileRecords();
+
+  // Find index
+  const index = records.findIndex(r => r.filename === filename && String(r.ownerID) === String(ownerId));
+
+  if (index !== -1) {
+    // Remove from array
+    records.splice(index, 1);
+    fs.writeFileSync(FILES_RECORD, JSON.stringify(records, null, 2));
+
+    // Remove actual file
+    const filePath = path.join(UPLOAD_DIR, String(ownerId), filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    } else {
+      // Check fallback path
+      const fallbackPath = path.join(UPLOAD_DIR, filename);
+      if (fs.existsSync(fallbackPath)) fs.unlinkSync(fallbackPath);
+    }
+
+    res.json({ success: true, message: "File deleted" });
+  } else {
+    res.status(404).json({ success: false, message: "File not found in records" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
