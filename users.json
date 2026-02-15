@@ -22,5 +22,11 @@
     "username": "tee",
     "password": "123",
     "role": "user"
+  },
+  {
+    "id": 1771167333987,
+    "username": "mooks",
+    "password": "123",
+    "role": "user"
   }
 ]

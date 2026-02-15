@@ -1,201 +1,174 @@
-      body {
-          text-align: center;
-          padding: 20px;
-          font-family: sans-serif;
-          background-color: #f4f4f9;
-      }
-
-      .container {
-          max-width: 400px;
-          margin: auto;
-          background: white;
-          padding: 30px;
-          border-radius: 10px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      input,
-      button {
-          margin: 10px 0;
-          padding: 12px;
-          width: 100%;
-          box-sizing: border-box;
-          border-radius: 5px;
-          border: 1px solid #ddd;
-      }
-
-      button {
-          background-color: #007bff;
-          color: white;
-          border: none;
-          cursor: pointer;
-          font-weight: bold;
-      }
-
-      button:hover {
-          background-color: #0056b3;
-      }
-
-      .secondary-btn {
-          background-color: red;
-      }
-
-      .secondary-btn:hover {
-          background-color: rgb(131, 0, 0);
-      }
-
-      .link-text {
-          color: #007bff;
-          cursor: pointer;
-          font-size: 0.9rem;
-          margin-top: 10px;
-          display: inline-block;
-      }
-
-      .hidden {
-          display: none;
-      }
-
-      ul {
-          list-style: none;
-          padding: 0;
-      }
-
-      li {
-          background: #fff;
-          border-bottom: 1px solid #eee;
-          padding: 10px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-      }
-
-      li a {
-          color: #007bff;
-          text-decoration: none;
-      }
-      /* =========================================
-   ส่วนแสดงรายการไฟล์แบบ Grid (File Cards)
-========================================= */
-
-/* เปลี่ยน #fileList จากรายการแนวตั้ง เป็นตาราง (Grid) */
-ul#fileList {
-  display: grid;
-  /* จัดวางอัตโนมัติ: ให้มีความกว้างอย่างน้อย 150px ต่อการ์ด แล้วขยายให้เต็ม */
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 20px; /* ระยะห่างระหว่างการ์ด */
-  list-style: none;
-  padding: 0;
-  margin-top: 25px;
+/* ตั้งค่าพื้นฐาน */
+body {
+    text-align: center;
+    padding: 20px;
+    font-family: 'Kanit', sans-serif;
+    background-color: #f8fafc;
+    color: #334155;
+    margin: 0;
 }
 
-/* สไตล์ของการ์ดไฟล์แต่ละใบ */
+/* กล่องคอนเทนเนอร์หลัก */
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* Form Elements */
+input, button {
+    margin: 10px 0;
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    background-color: #ef4444;
+}
+
+.secondary-btn:hover {
+    background-color: #dc2626;
+}
+
+.link-text {
+    color: #3b82f6;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
+
+/* --- File List Styles --- */
+
+/* Grid สำหรับรายการไฟล์ */
+.file-grid-view {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* การ์ดไฟล์แต่ละใบ */
 .file-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0; /* ขอบสีเทาอ่อน */
-  border-radius: 12px; /* มุมโค้งมน */
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: all 0.3s ease; /* เอฟเฟกต์การเคลื่อนไหว */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* เงาเบาๆ */
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-/* เอฟเฟกต์ตอนเอาเมาส์ชี้ที่การ์ด */
 .file-card:hover {
-  transform: translateY(-5px); /* ลอยขึ้นมานิดนึง */
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* เงาชัดขึ้น */
-  border-color: var(--primary, #6366f1); /* เปลี่ยนสีขอบเป็นสีหลัก (ถ้ามีตัวแปร) */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-/* คอนเทนเนอร์สำหรับรูปตัวอย่าง/ไอคอน */
+/* รูปตัวอย่าง (Thumbnail) */
 .file-preview-container {
-  width: 100%;
-  height: 120px; /* ความสูงคงที่ */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f8fafc; /* พื้นหลังสีเทาอ่อนมาก */
-  border-radius: 8px;
-  margin-bottom: 12px;
-  overflow: hidden; /* ซ่อนส่วนที่เกิน */
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f5f9;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
 }
 
-/* สไตล์สำหรับรูปภาพตัวอย่าง */
 .file-thumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* รักษาสัดส่วนรูปภาพให้เต็มกรอบโดยไม่เบี้ยว */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* สไตล์สำหรับไอคอน (กรณีไม่ใช่รูปภาพ) */
 .file-icon {
-  font-size: 3rem; /* ไอคอนขนาดใหญ่ */
-  color: #94a3b8; /* สีเทากลางๆ */
+    font-size: 4rem;
+    color: #94a3b8;
 }
 
-/* ส่วนแสดงชื่อไฟล์ */
+/* ข้อมูลไฟล์ */
 .file-info {
-  width: 100%;
-  margin-bottom: 12px;
+    text-align: left;
+    margin-bottom: 10px;
 }
 
 .file-name {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #334155;
-  /* เทคนิคการตัดคำที่ยาวเกินไปแล้วใส่ ... */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: default;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
 
-/* ปุ่มดาวน์โหลด */
+/* ปุ่ม Download */
 .btn-download {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  background-color: #e2e8f0;
-  color: #475569;
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s;
-  width: 100%; /* ให้ปุ่มกว้างเต็มการ์ด */
-  box-sizing: border-box;
+    display: block;
+    text-align: center;
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s;
 }
 
 .btn-download:hover {
-  background-color: #cbd5e1;
-  color: #1e293b;
+    background-color: #e2e8f0;
+    color: #0f172a;
 }
 
-.btn-download i {
-  margin-right: 6px;
-}
-.file-preview-container .file-icon {
-  font-size: 4rem; 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.2s;
+/* --- Admin Group Header --- */
+.user-group-header {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    padding: 12px 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    border-left: 6px solid #3b82f6;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
 }
 
-.file-card:hover .file-icon {
-  transform: scale(1.1);
-}
-
-.file-icon::after {
-  content: attr(data-ext);
-  font-size: 0.7rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-top: 5px;
-  opacity: 0.7;
+.user-group-header i {
+    color: #3b82f6;
 }

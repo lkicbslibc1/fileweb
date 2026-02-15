@@ -1,58 +1,58 @@
-
 <!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Group Work: File System</title>
+  <title>File Management System</title>
   <link rel="stylesheet" href="user.css">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 </head>
 
 <body>
   <div class="container">
     <div id="loginSection">
-      <h2>Login</h2>
+      <h2><i class="fas fa-lock"></i> Login</h2>
       <input type="text" id="loginUser" placeholder="Username" />
       <input type="password" id="loginPass" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <span class="link-text" onclick="showRegister()">Register</span>
+      <button onclick="login()">Sign In</button>
+      <div style="margin-top: 15px;">
+        <span class="link-text" onclick="showRegister()">Create an account</span>
+      </div>
     </div>
 
     <div id="registerSection" class="hidden">
-      <h2>Register</h2>
+      <h2><i class="fas fa-user-plus"></i> Register</h2>
       <input type="text" id="regUser" placeholder="Username" />
       <input type="password" id="regPass" placeholder="Password" />
-      <button onclick="register()" style="background-color: #28a745">
-        Register
-      </button>
-      <span class="link-text" onclick="showLogin()">Back to login</span>
+      <button onclick="register()" style="background-color: #22c55e">Register Now</button>
+      <div style="margin-top: 15px;">
+        <span class="link-text" onclick="showLogin()">Back to Login</span>
+      </div>
     </div>
 
     <div id="appSection" class="hidden">
-      <div style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-          ">
-        <h4 id="welcomeMsg" style="margin: 0">Welcome</h4>
-        <button onclick="logout()" class="secondary-btn" style="width: auto; padding: 5px 15px; margin: 0">
-          Logout
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+        <h3 id="welcomeMsg" style="margin: 0; text-align: left;">Welcome</h3>
+        <button onclick="logout()" class="secondary-btn" style="width: auto; padding: 8px 20px; margin: 0">
+          <i class="fas fa-sign-out-alt"></i> Logout
         </button>
       </div>
-      <hr />
 
-      <h5>อัปโหลดไฟล์ (Upload)</h5>
-      <input type="file" id="fileInput" />
-      <button onclick="uploadFile()">Upload File</button>
-      <p id="uploadStatus" style="color: green; font-size: 0.9rem"></p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 10px; border: 2px dashed #cbd5e1;">
+        <h5 style="margin-top: 0; margin-bottom: 15px; color: #64748b;">Upload New File</h5>
+        <input type="file" id="fileInput" style="background: white;" />
+        <div id="previewUpload" style="margin: 10px 0;"></div>
+        <button onclick="uploadFile()"><i class="fas fa-cloud-upload-alt"></i> Upload File</button>
+        <p id="uploadStatus" style="font-size: 0.9rem; margin-bottom: 0;"></p>
+      </div>
 
-      <h3 style="text-align: left; margin-top: 30px">รายการไฟล์ของคุณ</h3>
-      <ul id="fileList"></ul>
+      <h3 style="text-align: left; margin-top: 40px; border-left: 5px solid #3b82f6; padding-left: 10px;">
+        <i class="fas fa-folder-open"></i> File Storage
+      </h3>
+      
+      <div id="fileList"></div> 
     </div>
   </div>
 
@@ -62,22 +62,26 @@
     let currentUser = localStorage.getItem("username");
     let currentRole = localStorage.getItem("role");
 
-    // --- 2. ฟังก์ชันเช็คตอนเปิดหน้าเว็บว่าเคย Login ค้างไว้มั้ย ---
-    // (เอามาวางไว้นอกฟังก์ชัน เพื่อให้ทำงานทันทีที่เปิดเว็บ)
+    // Check Login Status on Load
     if (currentUser && currentRole) {
-      showApp(); // ถ้ามีข้อมูลค้างอยู่ ให้ข้ามไปหน้า App เลย
+      showApp();
     }
 
+    // --- Navigation Functions ---
     function showApp() {
       document.getElementById("loginSection").classList.add("hidden");
       document.getElementById("registerSection").classList.add("hidden");
       document.getElementById("appSection").classList.remove("hidden");
-      document.getElementById("welcomeMsg").innerHTML =
-        `User: ${currentUser} <span class="role-badge">${currentRole}</span>`;
+      
+      const badgeColor = currentRole === 'admin' ? '#ef4444' : '#3b82f6';
+      document.getElementById("welcomeMsg").innerHTML = `
+        <div style="font-size: 1.2rem;">Hello, <span style="font-weight:bold;">${currentUser}</span></div>
+        <span style="background:${badgeColor}; color:white; padding:2px 8px; border-radius:4px; font-size:0.75rem; text-transform:uppercase;">${currentRole}</span>
+      `;
+      
       loadFileList();
     }
 
-    // --- ฟังก์ชันสลับหน้า (เหมือนเดิม) ---
     function showRegister() {
       document.getElementById("loginSection").classList.add("hidden");
       document.getElementById("registerSection").classList.remove("hidden");
@@ -87,7 +91,7 @@
       document.getElementById("loginSection").classList.remove("hidden");
     }
 
-    // --- Register (เหมือนเดิม) ---
+    // --- Auth Functions ---
     function register() {
       const user = document.getElementById("regUser").value;
       const pass = document.getElementById("regPass").value;
@@ -98,20 +102,19 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass }),
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            alert("Registration successful! Please log in.");
-            showLogin();
-            document.getElementById("regUser").value = "";
-            document.getElementById("regPass").value = "";
-          } else {
-            alert(data.message);
-          }
-        });
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Registration successful! Please log in.");
+          showLogin();
+          document.getElementById("regUser").value = "";
+          document.getElementById("regPass").value = "";
+        } else {
+          alert(data.message);
+        }
+      });
     }
 
-    // --- 3. Login (แก้ไขให้บันทึกใส่ localStorage) ---
     function login() {
       const user = document.getElementById("loginUser").value;
       const pass = document.getElementById("loginPass").value;
@@ -121,140 +124,188 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass }),
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            // จำค่าลงเครื่อง!
-            localStorage.setItem("id", data.id);
-            localStorage.setItem("username", data.username);
-            localStorage.setItem("role", data.role);
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          localStorage.setItem("id", data.id);
+          localStorage.setItem("username", data.username);
+          localStorage.setItem("role", data.role);
 
-            // อัปเดตตัวแปร
-            currentId = data.id
-            currentUser = data.username;
-            currentRole = data.role;
+          currentId = data.id;
+          currentUser = data.username;
+          currentRole = data.role;
 
-            showApp();
-          } else {
-            alert(data.message);
-          }
-        });
+          showApp();
+        } else {
+          alert(data.message);
+        }
+      });
     }
 
-    // --- Upload (เหมือนเดิม) ---
+    function logout() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    // --- File Operations ---
     function uploadFile() {
-      const userId = localStorage.getItem("id");
-      const fileInput = document.getElementById("fileInput").files[0];
+      const fileInput = document.getElementById("fileInput");
+      const file = fileInput.files[0];
+
+      if (!file) return alert("กรุณาเลือกไฟล์ก่อนอัปโหลด");
 
       const formData = new FormData();
-      formData.append("file", fileInput);
-      formData.append("ownerId", userId);
+      formData.append("file", file);
+      formData.append("ownerId", currentId);
       formData.append("ownerName", currentUser);
+
+      const status = document.getElementById("uploadStatus");
+      status.style.color = "#3b82f6";
+      status.innerText = "⏳ Uploading...";
 
       fetch(`${serverUrl}/upload`, {
         method: "POST",
         body: formData,
-        headers: { "user-id": userId }
-      }).then(res => res.json())
-        .then(data => {
-          document.getElementById("uploadStatus").innerText = "✅ " + data.message;
-          document.getElementById("fileInput").value = ""; // ล้างช่องเลือกไฟล์
-          loadFileList(); // รีโหลดรายการไฟล์ใหม่ทันที
-        })
-        .catch(err => alert("เกิดข้อผิดพลาดในการอัปโหลด"));
+        headers: { "user-id": currentId }
+      })
+      .then(res => res.json())
+      .then(data => {
+        status.style.color = "green";
+        status.innerText = "✅ " + data.message;
+        fileInput.value = ""; 
+        document.getElementById("previewUpload").innerHTML = "";
+        loadFileList(); 
+        
+        // Clear status text after 3 seconds
+        setTimeout(() => { status.innerText = ""; }, 3000);
+      })
+      .catch(err => {
+        status.style.color = "red";
+        status.innerText = "❌ Upload Failed";
+      });
     }
 
-    // function loadFileList() {
-    //   fetch(`${serverUrl}/files?role=${currentRole}&username=${currentUser}`)
-    //     .then((res) => res.json())
-    //     .then((files) => {
-    //       const list = document.getElementById("fileList");
-    //       list.innerHTML = "";
-    //       if (files.length === 0)
-    //         list.innerHTML = '<p style="color:#aaa">No files found.</p>';
-
-    //       files.forEach((f) => {
-    //         list.innerHTML += `<li>${f} <a href="${serverUrl}/download/${currentId}/${f}" download>Download</a></li>`;
-    //       })
-    //     });
-    // }
-    // --- แก้ไขฟังก์ชัน loadFileList ให้แสดงผลแบบการ์ด ---
+    // --- Logic การแสดงผลไฟล์ (Highlight) ---
     function loadFileList() {
       fetch(`${serverUrl}/files?role=${currentRole}&username=${currentUser}`)
         .then((res) => res.json())
         .then((files) => {
-          const list = document.getElementById("fileList");
-          list.innerHTML = "";
+          const container = document.getElementById("fileList");
+          container.innerHTML = "";
+          
+          if (files.length === 0) {
+            container.innerHTML = `
+              <div style="text-align:center; padding: 40px; color:#94a3b8;">
+                <i class="fas fa-inbox fa-3x" style="margin-bottom:10px;"></i><br>
+                ยังไม่มีไฟล์ในระบบ
+              </div>`;
+            return;
+          }
 
-          files.forEach((f) => {
-            // --- วางบรรทัดที่ถามไว้ตรงนี้ครับ ---
-            const previewUrl = `${serverUrl}/preview/${currentId}/${f}`;
-            const downloadUrl = `${serverUrl}/download/${currentId}/${f}`;
-            // ------------------------------
-
-            const ext = f.split('.').pop().toLowerCase();
-            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
-
-            if (isImage) {
-              thumbnailHtml = `<img src="${previewUrl}" class="file-thumb">`;
-            } else {
-              // --- กำหนดไอคอนตามนามสกุลไฟล์ ---
-              let iconClass = "fa-file-alt"; // ไอคอนเริ่มต้น (เอกสารทั่วไป)
-              let iconColor = "#94a3b8";   // สีเริ่มต้น (เทา)
-
-              if (ext === 'pdf') {
-                iconClass = "fa-file-pdf";
-                iconColor = "#ef4444"; // สีแดง
-              } else if (['mp3', 'wav', 'ogg'].includes(ext)) {
-                iconClass = "fa-file-audio";
-                iconColor = "#f59e0b"; // สีส้ม
-              } else if (['mp4', 'mov', 'avi'].includes(ext)) {
-                iconClass = "fa-file-video";
-                iconColor = "#3b82f6"; // สีน้ำเงิน
-              } else if (['zip', 'rar', '7z'].includes(ext)) {
-                iconClass = "fa-file-archive";
-                iconColor = "#8b5cf6"; // สีม่วง
+          // === กรณีเป็น ADMIN: จัดกลุ่มตาม User ===
+          if (currentRole === 'admin') {
+            
+            // 1. Group Data
+            const filesByUser = {};
+            files.forEach(file => {
+              const owner = file.OwnerUsername || "Unknown User";
+              if (!filesByUser[owner]) {
+                filesByUser[owner] = [];
               }
+              filesByUser[owner].push(file);
+            });
 
-              thumbnailHtml = `
-  <div class="file-icon" data-ext="${ext}" style="color: ${iconColor};">
-    <i class="fas ${iconClass}"></i>
-  </div>`;
+            // 2. Render Groups
+            for (const [ownerName, userFiles] of Object.entries(filesByUser)) {
+              // Header
+              const headerHTML = `
+                <div class="user-group-header">
+                  <i class="fas fa-user-circle fa-lg"></i> 
+                  <span>${ownerName}</span>
+                  <span style="font-size:0.8rem; font-weight:normal; color:#64748b; margin-left:auto; background:white; padding:2px 8px; border-radius:10px;">
+                    ${userFiles.length} files
+                  </span>
+                </div>`;
+              
+              // Grid List
+              let fileListHTML = `<ul class="file-grid-view">`;
+              userFiles.forEach(file => {
+                fileListHTML += generateFileHtml(file);
+              });
+              fileListHTML += `</ul>`;
+
+              container.innerHTML += (headerHTML + fileListHTML);
             }
-            list.innerHTML += `
-          <li class="file-card">
-            <div class="file-preview-container">${thumbnailHtml}</div>
-            <div class="file-info"><span class="file-name">${f}</span></div>
-            <div class="file-actions">
-              <a href="${downloadUrl}" download class="btn-download">Download</a>
-            </div>
-          </li>`;
-          });
+
+          } else {
+            // === กรณีเป็น USER: แสดงรายการเดียว ===
+            let fileListHTML = `<ul class="file-grid-view">`;
+            files.forEach(file => {
+              fileListHTML += generateFileHtml(file);
+            });
+            fileListHTML += `</ul>`;
+            container.innerHTML = fileListHTML;
+          }
         });
     }
 
-    function logout() {
-      localStorage.clear(); // ล้างข้อมูลที่จำไว้
-      location.reload(); // รีเฟรชกลับไปหน้าแรก
+    // Helper: สร้าง HTML Card ของไฟล์
+    function generateFileHtml(fileObj) {
+      const f = fileObj.filename;
+      const ownerId = fileObj.ownerID;
+      
+      const previewUrl = `${serverUrl}/preview/${ownerId}/${f}`;
+      const downloadUrl = `${serverUrl}/download/${ownerId}/${f}`;
+
+      const ext = f.split('.').pop().toLowerCase();
+      const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+      
+      let thumbnailHtml = '';
+
+      if (isImage) {
+        thumbnailHtml = `<img src="${previewUrl}" class="file-thumb">`;
+      } else {
+        // Icon Mapping
+        let iconClass = "fa-file-alt"; 
+        let iconColor = "#94a3b8";   
+        if (ext === 'pdf') { iconClass = "fa-file-pdf"; iconColor = "#ef4444"; } 
+        else if (['mp3', 'wav', 'ogg'].includes(ext)) { iconClass = "fa-file-audio"; iconColor = "#f59e0b"; } 
+        else if (['mp4', 'mov', 'avi'].includes(ext)) { iconClass = "fa-file-video"; iconColor = "#3b82f6"; } 
+        else if (['zip', 'rar', '7z'].includes(ext)) { iconClass = "fa-file-archive"; iconColor = "#8b5cf6"; }
+        else if (['doc', 'docx'].includes(ext)) { iconClass = "fa-file-word"; iconColor = "#2563eb"; }
+        else if (['xls', 'xlsx'].includes(ext)) { iconClass = "fa-file-excel"; iconColor = "#16a34a"; }
+
+        thumbnailHtml = `<div class="file-icon" style="color: ${iconColor};"><i class="fas ${iconClass}"></i></div>`;
+      }
+
+      return `
+        <li class="file-card">
+          <div class="file-preview-container">${thumbnailHtml}</div>
+          <div class="file-info">
+            <span class="file-name" title="${f}">${f}</span>
+          </div>
+          <div class="file-actions">
+            <a href="${downloadUrl}" download class="btn-download">
+              <i class="fas fa-download"></i> Download
+            </a>
+          </div>
+        </li>`;
     }
 
+    // Preview รูปก่อน Upload
     document.getElementById('fileInput').addEventListener('change', function (e) {
       const file = e.target.files[0];
+      const previewArea = document.getElementById('previewUpload');
+      previewArea.innerHTML = "";
+      
       if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = function (event) {
-          const previewArea = document.getElementById('uploadStatus');
-          previewArea.innerHTML = `<img src="${event.target.result}" 
-        style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; margin-top: 10px; border: 2px solid #ddd;">`;
+          previewArea.innerHTML = `<img src="${event.target.result}" style="height: 100px; border-radius: 8px; border: 1px solid #ddd;">`;
         };
         reader.readAsDataURL(file);
       }
     });
-
   </script>
 </body>
-
 </html>
-
-
-
