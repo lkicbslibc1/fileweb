@@ -51,20 +51,53 @@ function saveFileRecord(record) {
 }
 
 // --- Multer Storage Config ---
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // แยกโฟลเดอร์ตาม User ID เพื่อความเป็นระเบียบ
+//     const userId = req.headers["user-id"];
+//     const userDir = path.join(UPLOAD_DIR, userId);
+
+//     if (!fs.existsSync(userDir)) {
+//       fs.mkdirSync(userDir, { recursive: true });
+//     }
+//     cb(null, userDir);
+//   },
+//   filename: (req, file, cb) => {
+//     // ใช้ชื่อไฟล์เดิม (หรือจะเปลี่ยนชื่อเพื่อกันซ้ำก็ได้)
+//     file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+//     cb(null, file.originalname);
+//   }
+// });
+// --- Multer Storage Config ---
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // แยกโฟลเดอร์ตาม User ID เพื่อความเป็นระเบียบ
     const userId = req.headers["user-id"];
     const userDir = path.join(UPLOAD_DIR, userId);
-
     if (!fs.existsSync(userDir)) {
       fs.mkdirSync(userDir, { recursive: true });
     }
     cb(null, userDir);
   },
   filename: (req, file, cb) => {
-    // ใช้ชื่อไฟล์เดิม (หรือจะเปลี่ยนชื่อเพื่อกันซ้ำก็ได้)
-    cb(null, file.originalname);
+    // 1. แปลงชื่อไทยให้ถูกต้องก่อน
+    const decodedName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    // 2. แยกชื่อไฟล์กับนามสกุลออกจากกัน
+    const ext = path.extname(decodedName);
+    const nameWithoutExt = path.basename(decodedName, ext);
+    
+    const userId = req.headers["user-id"];
+    const userDir = path.join(UPLOAD_DIR, userId);
+    
+    let fileName = decodedName;
+    let counter = 1;
+
+    //  ถ้าชื่อนี้มีอยู่แล้วในโฟลเดอร์ ให้เติม (1), (2) ไปเรื่อยๆ 
+    while (fs.existsSync(path.join(userDir, fileName))) {
+      fileName = `${nameWithoutExt} (${counter})${ext}`;
+      counter++;
+    }
+
+    cb(null, fileName);
   }
 });
 
@@ -98,7 +131,6 @@ app.post("/login", (req, res) => {
 
 // 3. Upload File
 app.post("/upload", upload.single("file"), (req, res) => {
-  // รับข้อมูลจาก FormData
   const { ownerId, ownerName } = req.body;
   const file = req.file;
 
@@ -106,13 +138,13 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
   // บันทึกข้อมูลไฟล์ลง JSON
   const newFileRecord = {
-    filename: file.originalname,
+    // ใช้ file.filename เพราะเป็นชื่อที่ Multer รันเลข (1) ให้เราเรียบร้อยแล้ว
+    filename: file.filename, 
     ownerID: ownerId,
-    OwnerUsername: ownerName // สำคัญสำหรับ Admin Grouping
+    OwnerUsername: ownerName
   };
 
   saveFileRecord(newFileRecord);
-
   res.json({ message: "File uploaded successfully!" });
 });
 
