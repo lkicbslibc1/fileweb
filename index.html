@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload files</title>
+    <title>Upload Files</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -89,8 +89,6 @@
     </div>
 
     <div id="appSection" class="dashboard-layout hidden">
-
-
       <div class="main-content">
         <div class="top-bar">
           <div>
@@ -832,6 +830,7 @@
         const isPublic = fileObj.visibility === "public";
         const sharedWith = fileObj.sharedWith || [];
         const isOwner = String(ownerId) === String(currentId);
+        const ownerUsername = fileObj.OwnerUsername || "Unknown"; // เพิ่มตัวแปรชื่อเจ้าของไฟล์
 
         const previewUrl = `${serverUrl}/preview/${ownerId}/${f}`;
         const downloadUrl = `${serverUrl}/download/${ownerId}/${f}`;
@@ -874,10 +873,17 @@
             `;
         }
 
+        // เพิ่ม Logic ส่วน Shared By
+        let sharedInfo = "";
+        if (!isOwner) {
+          sharedInfo = `<div style="font-size: 0.7rem; color: var(--secondary); margin-bottom: 4px;">Shared by <span style="color:var(--primary); font-weight:500;">${ownerUsername}</span></div>`;
+        }
+
         return `
         <div class="file-item">
             <div class="file-thumb-box">${thumbnailHtml}</div>
-            <span class="file-name-text" title="${f}">${f}</span>
+            <span class="file-name-text" title="${f}" style="margin-bottom: ${!isOwner ? "0" : "5px"}">${f}</span>
+            ${sharedInfo}
             <div class="file-meta">
                 <span>${(Math.random() * 5).toFixed(1)} MB</span>
                 <div>${actionButtons}</div>
@@ -905,7 +911,7 @@
           .then((users) => {
             userListDiv.innerHTML = "";
             const shareableUsers = users.filter(
-              (u) => String(u.id) !== String(ownerId),
+              (u) => String(u.id) !== String(ownerId) && u.id != "1",
             );
 
             if (shareableUsers.length === 0) {
