@@ -138,7 +138,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
   // บันทึกข้อมูลไฟล์ลง JSON
   const newFileRecord = {
-    // ใช้ file.filename เพราะเป็นชื่อที่ Multer รันเลข (1) ให้เราเรียบร้อยแล้ว
+    // ใช้ file.filename เพราะเป็นชื่อที่ Multer รันเลข (1)แล้ว
     filename: file.filename, 
     ownerID: ownerId,
     OwnerUsername: ownerName

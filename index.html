@@ -1,110 +1,88 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload Files</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="user.css" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <script>
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
-    </script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Files</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="user.css" />
 
-  <body>
-    <div id="loginSection" class="auth-wrapper">
-      <div class="auth-card">
-        <h1 style="color: var(--primary); font-size: 3rem; margin-bottom: 10px">
-          <i class="fas fa-cloud"></i>
-        </h1>
-        <h2 style="color: var(--text-main)">Sign In</h2>
-        <p style="color: var(--secondary); margin-bottom: 30px">
-          Enter your credentials to Upload Files
-        </p>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
 
-        <input type="text" id="loginUser" placeholder="Username" />
-        <input type="password" id="loginPass" placeholder="Password" />
+<body>
+  <div id="loginSection" class="auth-wrapper">
+    <div class="auth-card">
+      <h1 style="color: var(--primary); font-size: 3rem; margin-bottom: 10px">
+        <i class="fas fa-cloud"></i>
+      </h1>
+      <h2 style="color: var(--text-main)">Sign In</h2>
+      <p style="color: var(--secondary); margin-bottom: 30px">
+        Enter your credentials to Upload Files
+      </p>
 
-        <button
-          onclick="login()"
-          class="btn-primary"
-          style="width: 100%; margin-top: 20px"
-        >
-          Sign In
-        </button>
+      <input type="text" id="loginUser" placeholder="Username" />
+      <input type="password" id="loginPass" placeholder="Password" />
 
-        <div style="margin-top: 20px">
-          <span
-            style="color: var(--secondary); cursor: pointer"
-            onclick="showRegister()"
-            >Create an account</span
-          >
-        </div>
+      <button onclick="login()" class="btn-primary" style="width: 100%; margin-top: 20px">
+        Sign In
+      </button>
+
+      <div style="margin-top: 20px">
+        <span style="color: var(--secondary); cursor: pointer" onclick="showRegister()">Create an account</span>
       </div>
     </div>
+  </div>
 
-    <div id="registerSection" class="auth-wrapper hidden">
-      <div class="auth-card">
-        <h1 style="color: var(--success); font-size: 3rem; margin-bottom: 10px">
-          <i class="fas fa-user-plus"></i>
-        </h1>
-        <h2 style="color: var(--text-main)">Register</h2>
-        <p style="color: var(--secondary); margin-bottom: 30px">
-          Join Upload Files
-        </p>
+  <div id="registerSection" class="auth-wrapper hidden">
+    <div class="auth-card">
+      <h1 style="color: var(--success); font-size: 3rem; margin-bottom: 10px">
+        <i class="fas fa-user-plus"></i>
+      </h1>
+      <h2 style="color: var(--text-main)">Register</h2>
+      <p style="color: var(--secondary); margin-bottom: 30px">
+        Join Upload Files
+      </p>
 
-        <input type="text" id="regUser" placeholder="Username" />
-        <input type="password" id="regPass" placeholder="Password" />
+      <input type="text" id="regUser" placeholder="Username" />
+      <input type="password" id="regPass" placeholder="Password" />
 
-        <button
-          onclick="register()"
-          class="btn-primary"
-          style="
+      <button onclick="register()" class="btn-primary" style="
             width: 100%;
             margin-top: 20px;
             background-color: var(--success);
-          "
-        >
-          Register Now
-        </button>
+          ">
+        Register Now
+      </button>
 
-        <div style="margin-top: 20px">
-          <span
-            style="color: var(--secondary); cursor: pointer"
-            onclick="showLogin()"
-            >Back to Login</span
-          >
-        </div>
+      <div style="margin-top: 20px">
+        <span style="color: var(--secondary); cursor: pointer" onclick="showLogin()">Back to Login</span>
       </div>
     </div>
+  </div>
 
-    <div id="appSection" class="dashboard-layout hidden">
-      <div class="main-content">
-        <div class="top-bar">
-          <div>
-            <p class="page-title">
-              Pages / <span style="color: var(--text-main)">Dashboard</span>
-            </p>
-            <strong style="font-size: 1.8rem; color: var(--text-main)"
-              >Upload Files</strong
-            >
-          </div>
+  <div id="appSection" class="dashboard-layout hidden">
+    <div class="main-content">
+      <div class="top-bar">
+        <div>
+          <p class="page-title">
+            Pages / <span style="color: var(--text-main)">Dashboard</span>
+          </p>
+          <strong style="font-size: 1.8rem; color: var(--text-main)">Upload Files</strong>
+        </div>
 
-          <div style="display: flex; align-items: center; gap: 20px">
-            <div class="search-pill"></div>
+        <div style="display: flex; align-items: center; gap: 20px">
+          <div class="search-pill"></div>
 
-            <div
-              style="
+          <div style="
                 display: flex;
                 align-items: center;
                 gap: 10px;
@@ -112,33 +90,25 @@
                 padding: 5px 15px;
                 border-radius: 30px;
                 box-shadow: var(--shadow);
-              "
-            >
-              <div style="text-align: right">
-                <div
-                  id="welcomeUser"
-                  style="
+              ">
+            <div style="text-align: right">
+              <div id="welcomeUser" style="
                     font-weight: 600;
                     color: var(--text-main);
                     font-size: 0.9rem;
-                  "
-                >
-                  User
-                </div>
-                <div
-                  id="welcomeRole"
-                  style="
+                  ">
+                User
+              </div>
+              <div id="welcomeRole" style="
                     font-size: 0.7rem;
                     color: var(--secondary);
                     text-transform: uppercase;
-                  "
-                >
-                  Role
-                </div>
+                  ">
+                Role
               </div>
+            </div>
 
-              <div
-                style="
+            <div style="
                   width: 40px;
                   height: 40px;
                   background: var(--primary);
@@ -148,144 +118,97 @@
                   align-items: center;
                   justify-content: center;
                   font-weight: bold;
-                "
-              >
-                <i class="fas fa-user"></i>
-              </div>
-              <div
-                class="menu-item"
-                onclick="logout()"
-                style="color: var(--danger)"
-              >
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </div>
+                ">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="menu-item" onclick="logout()" style="color: var(--danger)">
+              <i class="fas fa-sign-out-alt"></i> Logout
             </div>
           </div>
         </div>
+      </div>
 
-        <div id="adminSearchSection" class="hidden">
-          <div class="admin-banner">
-            <h5><i class="fas fa-user-shield"></i> Admin User Filter</h5>
-            <div style="position: relative">
-              <i
-                class="fas fa-search"
-                style="
+      <div id="adminSearchSection" class="hidden">
+        <div class="admin-banner">
+          <h5><i class="fas fa-user-shield"></i> Admin User Filter</h5>
+          <div style="position: relative">
+            <i class="fas fa-search" style="
                   position: absolute;
                   left: 10px;
                   top: 50%;
                   transform: translateY(-50%);
                   color: rgba(255, 255, 255, 0.7);
-                "
-              ></i>
-              <input
-                type="text"
-                id="searchInput"
-                class="admin-input"
-                onkeyup="searchUser()"
-                placeholder="Type username..."
-                style="padding-left: 30px; margin: 0; width: 250px"
-              />
-            </div>
+                "></i>
+            <input type="text" id="searchInput" class="admin-input" onkeyup="searchUser()"
+              placeholder="Type username..." style="padding-left: 30px; margin: 0; width: 250px" />
           </div>
         </div>
+      </div>
 
-        <div
-          class="content-card"
-          id="uploadSection"
-          ondragover="event.preventDefault()"
-          ondrop="handleDrop(event)"
-        >
-          <div
-            class="upload-zone"
-            onclick="document.getElementById('fileInput').click()"
-          >
-            <i
-              class="fas fa-cloud-upload-alt"
-              style="font-size: 3rem; color: var(--primary)"
-            ></i>
-            <h3 style="color: var(--text-main); margin: 10px 0">
-              Upload Files
-            </h3>
-            <p style="color: var(--secondary)">PNG, JPG, PDF, DOCX allowed</p>
-            <input type="file" id="fileInput" class="hidden" />
-          </div>
+      <div class="content-card" id="uploadSection" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+          <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--primary)"></i>
+          <h3 style="color: var(--text-main); margin: 10px 0">
+            Upload Files
+          </h3>
+          <p style="color: var(--secondary)">PNG, JPG, PDF, DOCX allowed</p>
+          <input type="file" id="fileInput" class="hidden" />
         </div>
-        <div
-          id="userFilterSection"
-          class="content-card hidden"
-          style="
+      </div>
+      <div id="userFilterSection" class="content-card hidden" style="
             margin-bottom: 20px;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
             align-items: center;
-          "
-        >
-          <div style="position: relative; flex: 1; min-width: 200px">
-            <i
-              class="fas fa-search"
-              style="
+          ">
+        <div style="position: relative; flex: 1; min-width: 200px">
+          <i class="fas fa-search" style="
                 position: absolute;
                 left: 15px;
                 top: 50%;
                 transform: translateY(-50%);
                 color: var(--secondary);
-              "
-            ></i>
-            <input
-              type="text"
-              id="fileSearchInput"
-              onkeyup="renderFiles()"
-              placeholder="Search your files..."
-              style="
+              "></i>
+          <input type="text" id="fileSearchInput" onkeyup="renderFiles()" placeholder="Search your files..." style="
                 width: 100%;
                 padding: 10px 10px 10px 40px;
                 border-radius: 12px;
                 border: 1px solid #e2e8f0;
                 margin: 0;
-              "
-            />
-          </div>
-
-          <select
-            id="filterType"
-            onchange="renderFiles()"
-            style="
-              padding: 10px;
-              border-radius: 12px;
-              border: 1px solid #e2e8f0;
-              color: var(--text-main);
-            "
-          >
-            <option value="all">All Types</option>
-            <option value="image">Images</option>
-            <option value="document">Documents</option>
-            <option value="media">Media</option>
-          </select>
-
-          <select
-            id="sortOrder"
-            onchange="renderFiles()"
-            style="
-              padding: 10px;
-              border-radius: 12px;
-              border: 1px solid #e2e8f0;
-              color: var(--text-main);
-            "
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="az">A - Z</option>
-          </select>
+              " />
         </div>
-        <div id="fileList"></div>
-      </div>
-    </div>
 
-    <div id="deleteModal" class="modal-overlay hidden">
-      <div class="modal-content" style="text-align: center">
-        <div
-          style="
+        <select id="filterType" onchange="renderFiles()" style="
+              padding: 10px;
+              border-radius: 12px;
+              border: 1px solid #e2e8f0;
+              color: var(--text-main);
+            ">
+          <option value="all">All Types</option>
+          <option value="image">Images</option>
+          <option value="document">Documents</option>
+          <option value="media">Media</option>
+        </select>
+
+        <select id="sortOrder" onchange="renderFiles()" style="
+              padding: 10px;
+              border-radius: 12px;
+              border: 1px solid #e2e8f0;
+              color: var(--text-main);
+            ">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="az">A - Z</option>
+        </select>
+      </div>
+      <div id="fileList"></div>
+    </div>
+  </div>
+
+  <div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align: center">
+      <div style="
             width: 60px;
             height: 60px;
             background: #ffeeee;
@@ -295,121 +218,87 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-          "
-        >
-          <i class="fas fa-trash-alt" style="font-size: 1.5rem"></i>
-        </div>
-        <h3 style="color: var(--text-main)">Delete File?</h3>
-        <p id="deleteFileName" style="color: var(--secondary)">Are you sure?</p>
-        <div
-          style="
+          ">
+        <i class="fas fa-trash-alt" style="font-size: 1.5rem"></i>
+      </div>
+      <h3 style="color: var(--text-main)">Delete File?</h3>
+      <p id="deleteFileName" style="color: var(--secondary)">Are you sure?</p>
+      <div style="
             display: flex;
             gap: 10px;
             justify-content: center;
             margin-top: 20px;
-          "
-        >
-          <button
-            onclick="closeDeleteModal()"
-            style="
+          ">
+        <button onclick="closeDeleteModal()" style="
               background: #f1f5f9;
               color: var(--text-body);
               border: none;
               padding: 10px 20px;
               border-radius: 10px;
               cursor: pointer;
-            "
-          >
-            Cancel
-          </button>
-          <button
-            onclick="confirmDelete()"
-            style="
+            ">
+          Cancel
+        </button>
+        <button onclick="confirmDelete()" style="
               background: var(--danger);
               color: white;
               border: none;
               padding: 10px 20px;
               border-radius: 10px;
               cursor: pointer;
-            "
-          >
-            Delete
-          </button>
-        </div>
+            ">
+          Delete
+        </button>
       </div>
     </div>
+  </div>
 
-    <div id="shareModal" class="modal-overlay hidden">
-      <div class="modal-content">
-        <h3 style="color: var(--text-main)">
-          <i class="fas fa-share-alt"></i> Share File
-        </h3>
-        <p
-          id="shareFileName"
-          style="color: var(--primary); font-weight: bold"
-        ></p>
+  <div id="shareModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color: var(--text-main)">
+        <i class="fas fa-share-alt"></i> Share File
+      </h3>
+      <p id="shareFileName" style="color: var(--primary); font-weight: bold"></p>
 
-        <label
-          style="
+      <label style="
             display: flex;
             align-items: center;
             gap: 10px;
             margin: 20px 0;
             cursor: pointer;
-          "
-        >
-          <input
-            type="checkbox"
-            id="publicCheckbox"
-            onchange="togglePublicOption()"
-          />
-          <span style="color: var(--text-body)"
-            >Make Public (Everyone can see)</span
-          >
-        </label>
+          ">
+        <input type="checkbox" id="publicCheckbox" onchange="togglePublicOption()" />
+        <span style="color: var(--text-body)">Make Public (Everyone can see)</span>
+      </label>
 
-        <div
-          id="userSelectionArea"
-          style="border-top: 1px solid #eee; padding-top: 15px"
-        >
-          <p style="font-size: 0.9rem; color: var(--secondary)">
-            Share with specific users:
-          </p>
-          <div
-            id="userListCheckbox"
-            style="max-height: 150px; overflow-y: auto"
-          ></div>
-        </div>
+      <div id="userSelectionArea" style="border-top: 1px solid #eee; padding-top: 15px">
+        <p style="font-size: 0.9rem; color: var(--secondary)">
+          Share with specific users:
+        </p>
+        <div id="userListCheckbox" style="max-height: 150px; overflow-y: auto"></div>
+      </div>
 
-        <div style="text-align: right; margin-top: 20px">
-          <button
-            onclick="closeShareModal()"
-            style="
+      <div style="text-align: right; margin-top: 20px">
+        <button onclick="closeShareModal()" style="
               background: #f1f5f9;
               color: var(--text-body);
               border: none;
               padding: 8px 15px;
               border-radius: 8px;
               cursor: pointer;
-            "
-          >
-            Cancel
-          </button>
-          <button
-            onclick="saveShareSettings()"
-            class="btn-primary"
-            style="padding: 8px 15px"
-          >
-            Save
-          </button>
-        </div>
+            ">
+          Cancel
+        </button>
+        <button onclick="saveShareSettings()" class="btn-primary" style="padding: 8px 15px">
+          Save
+        </button>
       </div>
     </div>
+  </div>
 
-    <div id="successModal" class="modal-overlay hidden">
-      <div class="modal-content" style="text-align: center; max-width: 300px">
-        <div
-          style="
+  <div id="successModal" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align: center; max-width: 300px">
+      <div style="
             width: 60px;
             height: 60px;
             background: #e6fbf5;
@@ -419,59 +308,44 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-          "
-        >
-          <i class="fas fa-check" style="font-size: 1.5rem"></i>
-        </div>
-        <h3 style="color: var(--text-main)">Success!</h3>
-        <p id="successMessage" style="color: var(--secondary)"></p>
-        <button
-          onclick="closeSuccessModal()"
-          class="btn-primary"
-          style="width: 100%; background: var(--success)"
-        >
-          OK
-        </button>
+          ">
+        <i class="fas fa-check" style="font-size: 1.5rem"></i>
       </div>
+      <h3 style="color: var(--text-main)">Success!</h3>
+      <p id="successMessage" style="color: var(--secondary)"></p>
+      <button onclick="closeSuccessModal()" class="btn-primary" style="width: 100%; background: var(--success)">
+        OK
+      </button>
     </div>
+  </div>
 
-    <div id="previewModal" class="modal-overlay hidden">
-      <div
-        class="modal-content"
-        style="
+  <div id="previewModal" class="modal-overlay hidden">
+    <div class="modal-content" style="
           max-width: 800px;
           height: 80vh;
           display: flex;
           flex-direction: column;
-        "
-      >
-        <div
-          style="
+        ">
+      <div style="
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-          "
-        >
-          <h3 id="previewTitle" style="margin: 0; color: var(--text-main)">
-            Preview
-          </h3>
-          <button
-            onclick="closePreviewModal()"
-            style="
+          ">
+        <h3 id="previewTitle" style="margin: 0; color: var(--text-main)">
+          Preview
+        </h3>
+        <button onclick="closePreviewModal()" style="
               background: none;
               border: none;
               color: var(--secondary);
               font-size: 1.5rem;
               cursor: pointer;
-            "
-          >
-            &times;
-          </button>
-        </div>
-        <div
-          id="previewContent"
-          style="
+            ">
+          &times;
+        </button>
+      </div>
+      <div id="previewContent" style="
             flex: 1;
             background: #f4f7fe;
             border-radius: 10px;
@@ -480,246 +354,240 @@
             display: flex;
             justify-content: center;
             align-items: center;
-          "
-        ></div>
-        <div
-          style="
+          "></div>
+      <div style="
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 15px;
-          "
-        >
-          <span
-            id="previewFileInfo"
-            style="color: var(--secondary); font-size: 0.8rem"
-          ></span>
-          <button onclick="confirmUpload()" class="btn-primary">
-            <i class="fas fa-cloud-upload-alt"></i> Confirm Upload
-          </button>
-        </div>
+          ">
+        <span id="previewFileInfo" style="color: var(--secondary); font-size: 0.8rem"></span>
+        <button onclick="confirmUpload()" class="btn-primary">
+          <i class="fas fa-cloud-upload-alt"></i> Confirm Upload
+        </button>
       </div>
     </div>
+  </div>
 
-    <script>
-      const serverUrl = "http://localhost:5000";
-      let currentId = localStorage.getItem("id");
-      let currentUser = localStorage.getItem("username");
-      let currentRole = localStorage.getItem("role");
+  <script>
+    const serverUrl = "http://localhost:5000";
+    let currentId = localStorage.getItem("id");
+    let currentUser = localStorage.getItem("username");
+    let currentRole = localStorage.getItem("role");
 
-      let allUserFiles = [];
+    let allUserFiles = [];
 
-      // Check Login Status on Load
-      if (currentUser && currentRole) {
-        showApp();
-      }
+    // Check Login Status on Load
+    if (currentUser && currentRole) {
+      showApp();
+    }
 
-      // --- Navigation Functions ---
-      function showApp() {
-        document.getElementById("loginSection").classList.add("hidden");
-        document.getElementById("registerSection").classList.add("hidden");
-        document.getElementById("appSection").classList.remove("hidden");
+    // --- Navigation Functions ---
+    function showApp() {
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("registerSection").classList.add("hidden");
+      document.getElementById("appSection").classList.remove("hidden");
 
-        // Set User Profile in Sidebar/Header
-        document.getElementById("welcomeUser").innerText = currentUser;
-        document.getElementById("welcomeRole").innerText = currentRole;
+      // Set User Profile in Sidebar/Header
+      document.getElementById("welcomeUser").innerText = currentUser;
+      document.getElementById("welcomeRole").innerText = currentRole;
 
-        loadFileList();
-      }
+      loadFileList();
+    }
 
-      function showRegister() {
-        document.getElementById("loginSection").classList.add("hidden");
-        document.getElementById("registerSection").classList.remove("hidden");
-      }
-      function showLogin() {
-        document.getElementById("registerSection").classList.add("hidden");
-        document.getElementById("loginSection").classList.remove("hidden");
-      }
+    function showRegister() {
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("registerSection").classList.remove("hidden");
+    }
+    function showLogin() {
+      document.getElementById("registerSection").classList.add("hidden");
+      document.getElementById("loginSection").classList.remove("hidden");
+    }
 
-      // --- Auth Functions ---
-      function register() {
-        const user = document.getElementById("regUser").value;
-        const pass = document.getElementById("regPass").value;
-        if (!user || !pass) return alert("Please fill in all fields.");
+    // --- Auth Functions ---
+    function register() {
+      const user = document.getElementById("regUser").value;
+      const pass = document.getElementById("regPass").value;
+      if (!user || !pass) return alert("Please fill in all fields.");
 
-        fetch(`${serverUrl}/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user, password: pass }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              showSuccessModal("Registration successful! Please log in.");
-              showLogin();
-              document.getElementById("regUser").value = "";
-              document.getElementById("regPass").value = "";
-            } else {
-              alert(data.message);
-            }
-          });
-      }
-
-      function login() {
-        const user = document.getElementById("loginUser").value;
-        const pass = document.getElementById("loginPass").value;
-
-        fetch(`${serverUrl}/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user, password: pass }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              localStorage.setItem("id", data.id);
-              localStorage.setItem("username", data.username);
-              localStorage.setItem("role", data.role);
-
-              currentId = data.id;
-              currentUser = data.username;
-              currentRole = data.role;
-
-              showApp();
-            } else {
-              alert(data.message);
-            }
-          });
-      }
-
-      function handleDrop(e) {
-        e.preventDefault();
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        const fileInput = document.getElementById("fileInput");
-
-        if (files.length > 0) {
-          fileInput.files = files;
-          const event = new Event("change");
-          fileInput.dispatchEvent(event);
-        }
-      }
-
-      function logout() {
-        localStorage.clear();
-        location.reload();
-      }
-
-      let fileToDelete = null;
-
-      function deleteFile(ownerId, filename) {
-        fileToDelete = { ownerId, filename };
-        document.getElementById("deleteFileName").innerText = filename;
-        document.getElementById("deleteModal").classList.remove("hidden");
-      }
-
-      function closeDeleteModal() {
-        document.getElementById("deleteModal").classList.add("hidden");
-        fileToDelete = null;
-      }
-
-      function confirmDelete() {
-        if (!fileToDelete) return;
-        const { ownerId, filename } = fileToDelete;
-
-        fetch(`${serverUrl}/files`, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ownerId, filename }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              closeDeleteModal();
-              loadFileList();
-              showSuccessModal("ลบไฟล์เรียบร้อย");
-            } else {
-              alert("Failed to delete file: " + data.message);
-            }
-          })
-          .catch((err) => alert("Error deleting file"));
-      }
-
-      // --- Search functionality (Admin) ---
-      function searchUser() {
-        const input = document
-          .getElementById("searchInput")
-          .value.toLowerCase()
-          .trim();
-        const headers = document.querySelectorAll(".user-group-header");
-
-        headers.forEach((header) => {
-          const nameSpan = header.querySelector("span");
-
-          const username = nameSpan
-            ? nameSpan.innerText.toLowerCase()
-            : header.innerText.toLowerCase();
-
-          const list = header.nextElementSibling;
-
-          if (input === "" || username.includes(input)) {
-            header.classList.remove("hidden");
-            header.style.display = "flex";
-
-            if (list) {
-              list.classList.remove("hidden");
-              list.style.display = "grid";
-            }
+      fetch(`${serverUrl}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            showSuccessModal("Registration successful! Please log in.");
+            showLogin();
+            document.getElementById("regUser").value = "";
+            document.getElementById("regPass").value = "";
           } else {
-            header.classList.add("hidden");
-            header.style.display = "none";
-
-            if (list) {
-              list.classList.add("hidden");
-              list.style.display = "none";
-            }
+            alert(data.message);
           }
         });
+    }
+
+    function login() {
+      const user = document.getElementById("loginUser").value;
+      const pass = document.getElementById("loginPass").value;
+
+      fetch(`${serverUrl}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            localStorage.setItem("id", data.id);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("role", data.role);
+
+            currentId = data.id;
+            currentUser = data.username;
+            currentRole = data.role;
+
+            showApp();
+          } else {
+            alert(data.message);
+          }
+        });
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      const fileInput = document.getElementById("fileInput");
+
+      if (files.length > 0) {
+        fileInput.files = files;
+        const event = new Event("change");
+        fileInput.dispatchEvent(event);
       }
+    }
 
-      // --- Logic การโหลดไฟล์ ---
-      function loadFileList() {
-        fetch(`${serverUrl}/files?role=${currentRole}&username=${currentUser}`)
-          .then((res) => res.json())
-          .then((files) => {
-            const container = document.getElementById("fileList");
-            container.innerHTML = "";
+    function logout() {
+      localStorage.clear();
+      location.reload();
+    }
 
-            const filter = document.getElementById("userFilterSection");
-            if (currentRole == "user") {
-              filter.classList.remove("hidden");
-            }
+    let fileToDelete = null;
 
-            if (files.length === 0) {
-              console.log("dasdadsadsadsads");
-              container.innerHTML = `
+    function deleteFile(ownerId, filename) {
+      fileToDelete = { ownerId, filename };
+      document.getElementById("deleteFileName").innerText = filename;
+      document.getElementById("deleteModal").classList.remove("hidden");
+    }
+
+    function closeDeleteModal() {
+      document.getElementById("deleteModal").classList.add("hidden");
+      fileToDelete = null;
+    }
+
+    function confirmDelete() {
+      if (!fileToDelete) return;
+      const { ownerId, filename } = fileToDelete;
+
+      fetch(`${serverUrl}/files`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownerId, filename }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            closeDeleteModal();
+            loadFileList();
+            showSuccessModal("ลบไฟล์เรียบร้อย");
+          } else {
+            alert("Failed to delete file: " + data.message);
+          }
+        })
+        .catch((err) => alert("Error deleting file"));
+    }
+
+    // --- Search functionality (Admin) ---
+    function searchUser() {
+      const input = document
+        .getElementById("searchInput")
+        .value.toLowerCase()
+        .trim();
+      const headers = document.querySelectorAll(".user-group-header");
+
+      headers.forEach((header) => {
+        const nameSpan = header.querySelector("span");
+
+        const username = nameSpan
+          ? nameSpan.innerText.toLowerCase()
+          : header.innerText.toLowerCase();
+
+        const list = header.nextElementSibling;
+
+        if (input === "" || username.includes(input)) {
+          header.classList.remove("hidden");
+          header.style.display = "flex";
+
+          if (list) {
+            list.classList.remove("hidden");
+            list.style.display = "grid";
+          }
+        } else {
+          header.classList.add("hidden");
+          header.style.display = "none";
+
+          if (list) {
+            list.classList.add("hidden");
+            list.style.display = "none";
+          }
+        }
+      });
+    }
+
+    // --- Logic การโหลดไฟล์ ---
+    function loadFileList() {
+      fetch(`${serverUrl}/files?role=${currentRole}&username=${currentUser}`)
+        .then((res) => res.json())
+        .then((files) => {
+          const container = document.getElementById("fileList");
+          container.innerHTML = "";
+
+          const filter = document.getElementById("userFilterSection");
+          if (currentRole == "user") {
+            filter.classList.remove("hidden");
+          }
+
+          if (files.length === 0) {
+            console.log("dasdadsadsadsads");
+            container.innerHTML = `
               <div style="text-align:center; padding: 40px; color:var(--secondary);">
                 <i class="fas fa-box-open fa-3x" style="margin-bottom:10px; color: var(--primary-light);"></i><br>
                 No files found
               </div>`;
-              return;
-            }
+            return;
+          }
 
-            // === กรณีเป็น ADMIN: จัดกลุ่มตาม User ===
-            if (currentRole === "admin") {
-              const uploadSection = document.getElementById("uploadSection");
-              const searchSection =
-                document.getElementById("adminSearchSection");
+          // === กรณีเป็น ADMIN: จัดกลุ่มตาม User ===
+          if (currentRole === "admin") {
+            const uploadSection = document.getElementById("uploadSection");
+            const searchSection =
+              document.getElementById("adminSearchSection");
 
-              if (uploadSection) uploadSection.classList.add("hidden");
-              if (searchSection) searchSection.classList.remove("hidden");
+            if (uploadSection) uploadSection.classList.add("hidden");
+            if (searchSection) searchSection.classList.remove("hidden");
 
-              const filesByUser = {};
-              files.forEach((file) => {
-                const owner = file.OwnerUsername || "Unknown User";
-                if (!filesByUser[owner]) filesByUser[owner] = [];
-                filesByUser[owner].push(file);
-              });
+            const filesByUser = {};
+            files.forEach((file) => {
+              const owner = file.OwnerUsername || "Unknown User";
+              if (!filesByUser[owner]) filesByUser[owner] = [];
+              filesByUser[owner].push(file);
+            });
 
-              for (const [ownerName, userFiles] of Object.entries(
-                filesByUser,
-              )) {
-                const headerHTML = `
+            for (const [ownerName, userFiles] of Object.entries(
+              filesByUser,
+            )) {
+              const headerHTML = `
                 <div class="user-group-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
                   <div style="width:30px; height:30px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center;">
                     <i class="fas fa-user"></i>
@@ -731,155 +599,158 @@
                   <i class="fas fa-chevron-down" style="margin-left: 10px; color:var(--secondary);"></i>
                 </div>`;
 
-                let fileListHTML = `<div class="file-grid">`;
-                userFiles.forEach((file) => {
-                  fileListHTML += generateFileHtml(file);
-                });
-                fileListHTML += `</div>`;
-                container.innerHTML += headerHTML + fileListHTML;
-              }
-            } else {
-              // === กรณีเป็น USER ทั่วไป ===
-              allUserFiles = files;
-              const uploadSection = document.getElementById("uploadSection");
-              const searchSection =
-                document.getElementById("adminSearchSection");
-
-              if (uploadSection) uploadSection.classList.remove("hidden");
-              if (searchSection) searchSection.classList.add("hidden");
-
-              renderFiles();
+              let fileListHTML = `<div class="file-grid">`;
+              userFiles.forEach((file) => {
+                fileListHTML += generateFileHtml(file);
+              });
+              fileListHTML += `</div>`;
+              container.innerHTML += headerHTML + fileListHTML;
             }
-          });
-      }
+          } else {
+            // === กรณีเป็น USER ทั่วไป ===
+            allUserFiles = files;
+            const uploadSection = document.getElementById("uploadSection");
+            const searchSection =
+              document.getElementById("adminSearchSection");
 
-      // --- 2. ฟังก์ชัน Render Files สำหรับ User (Filter & Sort) ---
-      function renderFiles() {
-        const container = document.getElementById("fileList");
-        const searchEl = document.getElementById("fileSearchInput");
-        const typeEl = document.getElementById("filterType");
-        const sortEl = document.getElementById("sortOrder");
+            if (uploadSection) uploadSection.classList.remove("hidden");
+            if (searchSection) searchSection.classList.add("hidden");
 
-        const searchText = searchEl ? searchEl.value.toLowerCase() : "";
-        const filterType = typeEl ? typeEl.value : "all";
-        const sortOrder = sortEl ? sortEl.value : "newest";
-
-        let filtered = allUserFiles.filter((file) => {
-          const filename = file.filename.toLowerCase();
-          const ext = filename.split(".").pop();
-
-          // Text Search
-          const matchesSearch = filename.includes(searchText);
-
-          // Type Filter
-          let matchesType = true;
-          if (filterType !== "all") {
-            if (filterType === "image")
-              matchesType = ["jpg", "jpeg", "png", "gif", "webp"].includes(ext);
-            else if (filterType === "document")
-              matchesType = [
-                "pdf",
-                "doc",
-                "docx",
-                "xls",
-                "xlsx",
-                "ppt",
-                "pptx",
-                "txt",
-              ].includes(ext);
-            else if (filterType === "media")
-              matchesType = ["mp3", "wav", "mp4", "mov", "avi"].includes(ext);
+            renderFiles();
           }
-
-          return matchesSearch && matchesType;
         });
+    }
 
-        // B. Sort Data
-        filtered.sort((a, b) => {
-          const nameA = a.filename.toLowerCase();
-          const nameB = b.filename.toLowerCase();
+    // --- 2. ฟังก์ชัน Render Files สำหรับ User (Filter & Sort) ---
+    function renderFiles() {
+      const container = document.getElementById("fileList");
+      const searchEl = document.getElementById("fileSearchInput");
+      const typeEl = document.getElementById("filterType");
+      const sortEl = document.getElementById("sortOrder");
 
-          if (sortOrder === "az") return nameA.localeCompare(nameB);
-          if (sortOrder === "newest") return -1;
-          if (sortOrder === "oldest") return 1;
-          return 0;
-        });
+      const searchText = searchEl ? searchEl.value.toLowerCase() : "";
+      const filterType = typeEl ? typeEl.value : "all";
+      const sortOrder = sortEl ? sortEl.value : "newest";
 
-        // C. Render HTML
-        if (filtered.length === 0) {
-          container.innerHTML = `
+      let filtered = allUserFiles.filter((file) => {
+        const filename = file.filename.toLowerCase();
+        const ext = filename.split(".").pop();
+
+        // Text Search
+        const matchesSearch = filename.includes(searchText);
+
+        // Type Filter
+        let matchesType = true;
+        if (filterType !== "all") {
+          if (filterType === "image")
+            matchesType = ["jpg", "jpeg", "png", "gif", "webp"].includes(ext);
+          else if (filterType === "document")
+            matchesType = [
+              "pdf",
+              "doc",
+              "docx",
+              "xls",
+              "xlsx",
+              "ppt",
+              "pptx",
+              "txt",
+            ].includes(ext);
+          else if (filterType === "media")
+            matchesType = ["mp3", "wav", "mp4", "mov", "avi"].includes(ext);
+        }
+
+        return matchesSearch && matchesType;
+      });
+
+      // B. Sort Data
+      filtered.sort((a, b) => {
+        const nameA = a.filename.toLowerCase();
+        const nameB = b.filename.toLowerCase();
+
+        if (sortOrder === "az") return nameA.localeCompare(nameB);
+        if (sortOrder === "newest") return -1;
+        if (sortOrder === "oldest") return 1;
+        return 0;
+      });
+
+      // C. Render HTML
+      if (filtered.length === 0) {
+        container.innerHTML = `
               <div style="text-align:center; padding: 40px; color:var(--secondary);">
                 <i class="fas fa-search fa-3x" style="margin-bottom:10px; opacity:0.5;"></i><br>
                 No files found
               </div>`;
-          return;
-        }
-
-        let fileListHTML = `<div class="file-grid">`;
-        filtered.forEach((file) => {
-          fileListHTML += generateFileHtml(file);
-        });
-        fileListHTML += `</div>`;
-        container.innerHTML = fileListHTML;
+        return;
       }
 
-      // --- Helper: สร้าง HTML Card ของไฟล์ ---
-      function generateFileHtml(fileObj) {
-        const f = fileObj.filename;
-        const ownerId = fileObj.ownerID;
-        const isPublic = fileObj.visibility === "public";
-        const sharedWith = fileObj.sharedWith || [];
-        const isOwner = String(ownerId) === String(currentId);
-        const ownerUsername = fileObj.OwnerUsername || "Unknown"; // เพิ่มตัวแปรชื่อเจ้าของไฟล์
+      let fileListHTML = `<div class="file-grid">`;
+      filtered.forEach((file) => {
+        fileListHTML += generateFileHtml(file);
+      });
+      fileListHTML += `</div>`;
+      container.innerHTML = fileListHTML;
+    }
 
-        const previewUrl = `${serverUrl}/preview/${ownerId}/${f}`;
-        const downloadUrl = `${serverUrl}/download/${ownerId}/${f}`;
-        const ext = f.split(".").pop().toLowerCase();
-        const isImage = ["jpg", "jpeg", "png", "gif", "webp"].includes(ext);
+    // --- Helper: สร้าง HTML Card ของไฟล์ ---
+    function generateFileHtml(fileObj) {
+      const f = fileObj.filename;
+      const ownerId = fileObj.ownerID;
+      const isPublic = fileObj.visibility === "public";
+      const sharedWith = fileObj.sharedWith || [];
+      const isOwner = String(ownerId) === String(currentId);
+      const ownerUsername = fileObj.OwnerUsername || "Unknown"; // เพิ่มตัวแปรชื่อเจ้าของไฟล์
 
-        let thumbnailHtml = "";
-        let iconColor = "var(--primary)";
-        let iconClass = "fa-file";
+      const previewUrl = `${serverUrl}/preview/${ownerId}/${f}`;
+      const downloadUrl = `${serverUrl}/download/${ownerId}/${f}`;
+      const ext = f.split(".").pop().toLowerCase();
+      const isImage = ["jpg", "jpeg", "png", "gif", "webp"].includes(ext);
 
-        if (isImage) {
-          thumbnailHtml = `<img src="${previewUrl}" style="width:100%; height:100%; object-fit:cover;">`;
-        } else {
-          if (ext === "pdf") {
-            iconClass = "fa-file-pdf";
-            iconColor = "#EE5D50";
-          } else if (["doc", "docx"].includes(ext)) {
-            iconClass = "fa-file-word";
-            iconColor = "#2B3674";
-          } else if (["xls", "xlsx"].includes(ext)) {
-            iconClass = "fa-file-excel";
-            iconColor = "#05CD99";
-          } else if (["mp4", "mov"].includes(ext)) {
-            iconClass = "fa-file-video";
-            iconColor = "#FFB547";
-          }
-          thumbnailHtml = `<i class="fas ${iconClass}" style="color:${iconColor};"></i>`;
+      let thumbnailHtml = "";
+      let iconColor = "var(--primary)";
+      let iconClass = "fa-file";
+
+      if (isImage) {
+        thumbnailHtml = `<img src="${previewUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+      } else {
+        if (ext === "pdf") {
+          iconClass = "fa-file-pdf";
+          iconColor = "#EE5D50";
+        } else if (["doc", "docx"].includes(ext)) {
+          iconClass = "fa-file-word";
+          iconColor = "#2B3674";
+        } else if (["xls", "xlsx", "csv"].includes(ext)) {
+          iconClass = "fa-file-excel";
+          iconColor = "#05CD99";
+        } else if (["mp3", "wav", "flac"].includes(ext)) {
+          iconClass = "fa-file-audio";
+          iconColor = "#A0616A";
+        } else if (["mp4", "mov", "avi"].includes(ext)) {
+          iconClass = "fa-file-video";
+          iconColor = "#FFB547";
         }
+        thumbnailHtml = `<i class="fas ${iconClass}" style="color:${iconColor};"></i>`;
+      }
 
-        // Actions
-        let actionButtons = `
+      // Actions
+      let actionButtons = `
             <a href="${downloadUrl}" download title="Download" style="color:var(--secondary); text-decoration:none;"><i class="fas fa-download"></i></a>
         `;
 
-        if (currentRole === "admin" || isOwner) {
-          const sharedStr = sharedWith.join(",");
-          actionButtons += `
+      if (currentRole === "admin" || isOwner) {
+        const sharedStr = sharedWith.join(",");
+        actionButtons += `
                 <span onclick="openShareModal('${ownerId}', '${f}', '${isPublic}', '${sharedStr}')" style="color:var(--primary); cursor:pointer; margin-left:10px;"><i class="fas fa-user-plus"></i></span>
                 <span onclick="deleteFile('${ownerId}', '${f}')" style="color:var(--danger); cursor:pointer; margin-left:10px;"><i class="fas fa-trash"></i></span>
             `;
-        }
+      }
 
-        // เพิ่ม Logic ส่วน Shared By
-        let sharedInfo = "";
-        if (!isOwner) {
-          sharedInfo = `<div style="font-size: 0.7rem; color: var(--secondary); margin-bottom: 4px;">Shared by <span style="color:var(--primary); font-weight:500;">${ownerUsername}</span></div>`;
-        }
+      // เพิ่ม Logic ส่วน Shared By
+      let sharedInfo = "";
+      if (!isOwner) {
+        sharedInfo = `<div style="font-size: 0.7rem; color: var(--secondary); margin-bottom: 4px;">Shared by <span style="color:var(--primary); font-weight:500;">${ownerUsername}</span></div>`;
+      }
 
-        return `
+      return `
         <div class="file-item">
             <div class="file-thumb-box">${thumbnailHtml}</div>
             <span class="file-name-text" title="${f}" style="margin-bottom: ${!isOwner ? "0" : "5px"}">${f}</span>
@@ -890,189 +761,249 @@
             </div>
             ${isPublic ? '<div style="position:absolute; top:10px; right:10px; background:#05CD99; color:white; font-size:0.6rem; padding:2px 6px; border-radius:4px;">Public</div>' : ""}
         </div>`;
-      }
+    }
 
-      // --- Modal Logic (Share & Preview) ---
-      let currentEditingFile = null;
+    // --- Modal Logic (Share & Preview) ---
+    let currentEditingFile = null;
 
-      function openShareModal(ownerId, filename, isPublic, sharedWithStr) {
-        currentEditingFile = { ownerId, filename };
-        const modal = document.getElementById("shareModal");
-        const title = document.getElementById("shareFileName");
-        const publicCb = document.getElementById("publicCheckbox");
-        const userListDiv = document.getElementById("userListCheckbox");
+    function openShareModal(ownerId, filename, isPublic, sharedWithStr) {
+      currentEditingFile = { ownerId, filename };
+      const modal = document.getElementById("shareModal");
+      const title = document.getElementById("shareFileName");
+      const publicCb = document.getElementById("publicCheckbox");
+      const userListDiv = document.getElementById("userListCheckbox");
 
-        title.innerText = filename;
-        publicCb.checked = isPublic === "true";
-        const sharedWith = sharedWithStr ? sharedWithStr.split(",") : [];
+      title.innerText = filename;
+      publicCb.checked = isPublic === "true";
+      const sharedWith = sharedWithStr ? sharedWithStr.split(",") : [];
 
-        fetch(`${serverUrl}/users`)
-          .then((res) => res.json())
-          .then((users) => {
-            userListDiv.innerHTML = "";
-            const shareableUsers = users.filter(
-              (u) => String(u.id) !== String(ownerId) && u.id != "1",
-            );
+      fetch(`${serverUrl}/users`)
+        .then((res) => res.json())
+        .then((users) => {
+          userListDiv.innerHTML = "";
+          const shareableUsers = users.filter(
+            (u) => String(u.id) !== String(ownerId) && u.id != "1",
+          );
 
-            if (shareableUsers.length === 0) {
-              userListDiv.innerHTML =
-                "<p style='color:var(--secondary); text-align:center;'>No other users to share with.</p>";
-            }
+          if (shareableUsers.length === 0) {
+            userListDiv.innerHTML =
+              "<p style='color:var(--secondary); text-align:center;'>No other users to share with.</p>";
+          }
 
-            shareableUsers.forEach((u) => {
-              const isChecked = sharedWith.includes(String(u.id));
-              const div = document.createElement("div");
-              div.innerHTML = `
+          shareableUsers.forEach((u) => {
+            const isChecked = sharedWith.includes(String(u.id));
+            const div = document.createElement("div");
+            div.innerHTML = `
                 <label style="display:flex; align-items:center; gap:10px; padding:5px 0; cursor:pointer;">
                   <input type="checkbox" value="${u.id}" class="user-share-checkbox" ${isChecked ? "checked" : ""}>
                   <span style="color:var(--text-body);">${u.username}</span>
                 </label>
                `;
-              userListDiv.appendChild(div);
-            });
-            togglePublicOption();
-            modal.classList.remove("hidden");
+            userListDiv.appendChild(div);
           });
-      }
-
-      function closeShareModal() {
-        document.getElementById("shareModal").classList.add("hidden");
-        currentEditingFile = null;
-      }
-
-      function togglePublicOption() {
-        const isPublic = document.getElementById("publicCheckbox").checked;
-        const userArea = document.getElementById("userSelectionArea");
-        userArea.style.opacity = isPublic ? "0.5" : "1";
-        userArea.style.pointerEvents = isPublic ? "none" : "auto";
-      }
-
-      function saveShareSettings() {
-        if (!currentEditingFile) return;
-        const isPublic = document.getElementById("publicCheckbox").checked;
-        const checkboxes = document.querySelectorAll(
-          ".user-share-checkbox:checked",
-        );
-        const sharedWith = Array.from(checkboxes).map((cb) => cb.value);
-
-        fetch(`${serverUrl}/files/share`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ownerId: currentEditingFile.ownerId,
-            filename: currentEditingFile.filename,
-            isPublic: isPublic,
-            sharedWith: sharedWith,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              closeShareModal();
-              loadFileList();
-            } else {
-              alert("Error updating settings");
-            }
-          });
-      }
-
-      // --- Preview & Upload ---
-      let selectedFile = null;
-
-      document
-        .getElementById("fileInput")
-        .addEventListener("change", async function (e) {
-          const file = e.target.files[0];
-          if (!file) return;
-
-          selectedFile = file;
-          const modal = document.getElementById("previewModal");
-          const title = document.getElementById("previewTitle");
-          const content = document.getElementById("previewContent");
-          const info = document.getElementById("previewFileInfo");
-
+          togglePublicOption();
           modal.classList.remove("hidden");
-          title.innerText = file.name;
-          info.innerText = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+        });
+    }
 
-          content.innerHTML =
-            '<div style="color:var(--secondary);">⏳ Loading Preview...</div>';
+    function closeShareModal() {
+      document.getElementById("shareModal").classList.add("hidden");
+      currentEditingFile = null;
+    }
 
-          if (file.type.startsWith("image/")) {
-            const img = document.createElement("img");
-            img.src = URL.createObjectURL(file);
-            img.style.maxWidth = "100%";
-            img.style.maxHeight = "100%";
-            img.style.borderRadius = "10px";
-            content.innerHTML = "";
-            content.appendChild(img);
-          } else if (file.type === "application/pdf") {
-            content.innerHTML =
-              "<div style='text-align:center'>PDF Preview Ready</div>";
-            try {
-              const arrayBuffer = await file.arrayBuffer();
-              const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-              const page = await pdf.getPage(1);
-              const viewport = page.getViewport({ scale: 1.0 });
-              const canvas = document.createElement("canvas");
-              const context = canvas.getContext("2d");
-              canvas.height = viewport.height;
-              canvas.width = viewport.width;
-              canvas.style.maxWidth = "100%";
-              await page.render({ canvasContext: context, viewport }).promise;
-              content.innerHTML = "";
-              content.appendChild(canvas);
-            } catch (e) {
-              content.innerHTML = "Cannot preview PDF";
-            }
+    function togglePublicOption() {
+      const isPublic = document.getElementById("publicCheckbox").checked;
+      const userArea = document.getElementById("userSelectionArea");
+      userArea.style.opacity = isPublic ? "0.5" : "1";
+      userArea.style.pointerEvents = isPublic ? "none" : "auto";
+    }
+
+    function saveShareSettings() {
+      if (!currentEditingFile) return;
+      const isPublic = document.getElementById("publicCheckbox").checked;
+      const checkboxes = document.querySelectorAll(
+        ".user-share-checkbox:checked",
+      );
+      const sharedWith = Array.from(checkboxes).map((cb) => cb.value);
+
+      fetch(`${serverUrl}/files/share`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ownerId: currentEditingFile.ownerId,
+          filename: currentEditingFile.filename,
+          isPublic: isPublic,
+          sharedWith: sharedWith,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            closeShareModal();
+            loadFileList();
           } else {
-            content.innerHTML = `<div style="text-align:center; color:var(--secondary);"><i class="fas fa-file fa-3x"></i><br>${file.type}</div>`;
+            alert("Error updating settings");
           }
         });
+    }
 
-      function closePreviewModal() {
-        document.getElementById("previewModal").classList.add("hidden");
-        document.getElementById("fileInput").value = "";
-        selectedFile = null;
+    // --- Preview & Upload ---
+    let selectedFile = null;
+
+    document.getElementById("fileInput").addEventListener("change", async function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      selectedFile = file;
+      const modal = document.getElementById("previewModal");
+      const title = document.getElementById("previewTitle");
+      const content = document.getElementById("previewContent");
+      const info = document.getElementById("previewFileInfo");
+
+      modal.classList.remove("hidden");
+      title.innerText = file.name;
+      info.innerText = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+
+      // Reset Content & Show Loading
+      content.innerHTML = '<div style="color:var(--secondary); font-size:1.2rem;"><i class="fas fa-spinner fa-spin"></i> กำลังประมวลผลตัวอย่างไฟล์...</div>';
+
+      const fileType = file.type;
+      const fileName = file.name.toLowerCase();
+
+      try {
+        // === 1. IMAGE (รูปภาพ) ===
+        if (fileType.startsWith("image/")) {
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.style.maxWidth = "100%";
+          img.style.maxHeight = "100%";
+          img.style.borderRadius = "10px";
+          img.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+          content.innerHTML = "";
+          content.appendChild(img);
+        }
+        // === 2. VIDEO (วิดีโอ MP4, WEBM) ===
+        else if (fileType.startsWith("video/")) {
+          const video = document.createElement("video");
+          video.src = URL.createObjectURL(file);
+          video.controls = true; // มีปุ่ม Play/Pause
+          video.style.maxWidth = "100%";
+          video.style.maxHeight = "60vh";
+          content.innerHTML = "";
+          content.appendChild(video);
+        }
+        // === 3. AUDIO (เสียง MP3, WAV) ===
+        else if (fileType.startsWith("audio/")) {
+          const audio = document.createElement("audio");
+          audio.src = URL.createObjectURL(file);
+          audio.controls = true;
+          audio.style.width = "100%";
+          audio.style.marginTop = "20px";
+
+          content.innerHTML = `<div style="text-align:center; margin-bottom:20px;"><i class="fas fa-music fa-5x" style="color:var(--primary);"></i></div>`;
+          content.appendChild(audio);
+        }
+        // === 4. PDF ===
+        else if (fileType === "application/pdf") {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+          const page = await pdf.getPage(1); // โชว์แค่หน้าแรก
+          const viewport = page.getViewport({ scale: 1.2 }); // ปรับขนาด
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          canvas.style.maxWidth = "100%";
+
+          await page.render({ canvasContext: context, viewport }).promise;
+          content.innerHTML = "";
+          content.appendChild(canvas);
+        }
+        // === 5. Word (.docx) ใช้ Mammoth.js ===
+        else if (fileName.endsWith(".docx")) {
+          const arrayBuffer = await file.arrayBuffer();
+          const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+
+          content.innerHTML = `<div style="background:white; padding:40px; width:100%; color:black; overflow-y:auto; max-height:60vh; text-align:left;">
+                ${result.value}
+            </div>`;
+        }
+        // === 6. Excel (.xlsx, .csv) ใช้ SheetJS ===
+        else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls") || fileName.endsWith(".csv")) {
+          const arrayBuffer = await file.arrayBuffer();
+          const workbook = XLSX.read(arrayBuffer, { type: "array" });
+          const firstSheetName = workbook.SheetNames[0]; // เอาชีทแรก
+          const worksheet = workbook.Sheets[firstSheetName];
+          const html = XLSX.utils.sheet_to_html(worksheet);
+
+          content.innerHTML = `<div style="background:white; padding:10px; width:100%; overflow:auto; max-height:60vh; color:black; text-align:left;">
+                <style>table { border-collapse: collapse; width: 100%; } td, th { border: 1px solid #ddd; padding: 8px; }</style>
+                ${html}
+            </div>`;
+        }
+        // === 7. Text (.txt, .json, .js) ===
+        else if (fileType === "text/plain" || fileName.endsWith(".txt") || fileName.endsWith(".json")) {
+          const text = await file.text();
+          content.innerHTML = `<pre style="background:#f4f4f4; padding:20px; text-align:left; overflow:auto; width:100%; max-height:60vh;">${text}</pre>`;
+        }
+        // === 8. Unknown Type (แสดงไอคอน) ===
+        else {
+          content.innerHTML = `<div style="text-align:center; color:var(--secondary);">
+                <i class="fas fa-file-alt fa-5x"></i><br><br>
+                ไม่สามารถแสดงตัวอย่างไฟล์นี้ได้<br>(${fileType || "Unknown type"})
+            </div>`;
+        }
+
+      } catch (error) {
+        console.error(error);
+        content.innerHTML = `<div style="color:var(--danger);">เกิดข้อผิดพลาดในการแสดงตัวอย่าง: ${error.message}</div>`;
       }
+    });
 
-      function showSuccessModal(msg) {
-        document.getElementById("successMessage").innerText = msg || "Success";
-        document.getElementById("successModal").classList.remove("hidden");
-      }
-      function closeSuccessModal() {
-        document.getElementById("successModal").classList.add("hidden");
-      }
+    function closePreviewModal() {
+      document.getElementById("previewModal").classList.add("hidden");
+      document.getElementById("fileInput").value = "";
+      selectedFile = null;
+    }
 
-      function confirmUpload() {
-        if (!selectedFile) return;
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        formData.append("ownerId", currentId);
-        formData.append("ownerName", currentUser);
+    function showSuccessModal(msg) {
+      document.getElementById("successMessage").innerText = msg || "Success";
+      document.getElementById("successModal").classList.remove("hidden");
+    }
+    function closeSuccessModal() {
+      document.getElementById("successModal").classList.add("hidden");
+    }
 
-        const btn = document.querySelector('button[onclick="confirmUpload()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading...`;
-        btn.disabled = true;
+    function confirmUpload() {
+      if (!selectedFile) return;
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("ownerId", currentId);
+      formData.append("ownerName", currentUser);
 
-        fetch(`${serverUrl}/upload`, {
-          method: "POST",
-          body: formData,
-          headers: { "user-id": currentId },
+      const btn = document.querySelector('button[onclick="confirmUpload()"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading...`;
+      btn.disabled = true;
+
+      fetch(`${serverUrl}/upload`, {
+        method: "POST",
+        body: formData,
+        headers: { "user-id": currentId },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          closePreviewModal();
+          loadFileList();
+          showSuccessModal("อัปโหลดเรียบร้อย");
         })
-          .then((res) => res.json())
-          .then((data) => {
-            closePreviewModal();
-            loadFileList();
-            showSuccessModal("อัปโหลดเรียบร้อย");
-          })
-          .catch((err) => alert("Upload Failed"))
-          .finally(() => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-          });
-      }
-    </script>
-  </body>
+        .catch((err) => alert("Upload Failed"))
+        .finally(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        });
+    }
+  </script>
+</body>
+
 </html>
