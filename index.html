@@ -73,11 +73,7 @@
         <span style="color: var(--primary)">Upload</span>Files
       </div>
 
-      <div style="flex-grow: 1">
-        <div class="menu-item active">
-          <i class="fas fa-th-large"></i> Dashboard
-        </div>
-      </div>
+     
 
       <div class="menu-item" onclick="logout()" style="color: var(--danger)">
         <i class="fas fa-sign-out-alt"></i> Logout
@@ -165,7 +161,7 @@
           <input type="file" id="fileInput" class="hidden" />
         </div>
       </div>
-      <div id="userFilterSection" class="content-card"
+      <div id="userFilterSection" class="content-card hidden"
         style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
         <div style="position: relative; flex: 1; min-width: 200px;">
           <i class="fas fa-search"
@@ -539,6 +535,11 @@
         .then((files) => {
           const container = document.getElementById("fileList");
           container.innerHTML = "";
+
+          const filter = document.getElementById("userFilterSection")
+          if(currentRole == "user") {
+            filter.classList.remove("hidden")
+          }
 
           if (files.length === 0) {
             console.log("dasdadsadsadsads")
