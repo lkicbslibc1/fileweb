@@ -223,10 +223,14 @@
   </div>
   <!-- ---------------------------------------------------------------------------------- -->
   <script>
+    
     const serverUrl = "http://localhost:5000";
     let currentId = localStorage.getItem("id");
     let currentUser = localStorage.getItem("username");
     let currentRole = localStorage.getItem("role");
+    
+    // --- 1. เพิ่มตัวแปรเก็บไฟล์ทั้งหมด เพื่อใช้ในการ Filter Client-side ---
+    let allUserFiles = []; 
 
     // Check Login Status on Load
     if (currentUser && currentRole) {
@@ -307,6 +311,7 @@
           }
         });
     }
+
     function handleDrop(e) {
       e.preventDefault();
       const section = document.getElementById('uploadSection');
@@ -319,15 +324,16 @@
 
       if (files.length > 0) {
         fileInput.files = files;
-        // สั่งให้เกิด event change เพื่อเปิด Modal Preview ทันที
         const event = new Event('change');
         fileInput.dispatchEvent(event);
       }
     }
+
     function logout() {
       localStorage.clear();
       location.reload();
     }
+
     let fileToDelete = null;
 
     function deleteFile(ownerId, filename) {
@@ -343,9 +349,7 @@
 
     function confirmDelete() {
       if (!fileToDelete) return;
-
       const { ownerId, filename } = fileToDelete;
-
       const deleteBtn = document.querySelector('#deleteModal .modal-footer button:last-child');
       const originalText = deleteBtn.innerText;
       deleteBtn.innerText = "Deleting...";
@@ -368,63 +372,23 @@
         })
         .catch(err => alert("Error deleting file"))
         .finally(() => {
-          // คืนค่าปุ่มกลับมาเหมือนเดิม (เผื่อกรณี Error แล้ว Modal ไม่ปิด)
           if (deleteBtn) {
             deleteBtn.innerText = originalText;
             deleteBtn.disabled = false;
           }
         });
     }
-    // --- File Operations ---
-    function uploadFile() {
-      const fileInput = document.getElementById("fileInput");
-      const file = fileInput.files[0];
 
-      if (!file) return alert("กรุณาเลือกไฟล์ก่อนอัปโหลด");
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("ownerId", currentId);
-      formData.append("ownerName", currentUser);
-
-      const status = document.getElementById("uploadStatus");
-      status.style.color = "#3b82f6";
-      status.innerText = "⏳ Uploading...";
-
-      fetch(`${serverUrl}/upload`, {
-        method: "POST",
-        body: formData,
-        headers: { "user-id": currentId }
-      })
-        .then(res => res.json())
-        .then(data => {
-          status.style.color = "green";
-          status.innerText = "✅ " + data.message;
-          fileInput.value = "";
-          document.getElementById("previewUpload").innerHTML = "";
-          loadFileList();
-
-          // Clear status text after 3 seconds
-          setTimeout(() => { status.innerText = ""; }, 3000);
-        })
-        .catch(err => {
-          status.style.color = "red";
-          status.innerText = "❌ Upload Failed";
-        });
-    }
-
-    // --- Search functionality ---
+    // --- Search functionality (Admin) ---
     function searchUser() {
       const input = document.getElementById("searchInput").value.toLowerCase();
-
       const headers = document.querySelectorAll(".user-group-header");
       headers.forEach(header => {
         const username = header.innerText.toLowerCase();
         const list = header.nextElementSibling;
-
         if (username.includes(input)) {
-          header.style.display = "flex"; // Restore flex layout
-          if (list) list.style.display = "grid"; // Restore grid
+          header.style.display = "flex";
+          if (list) list.style.display = "grid";
         } else {
           header.style.display = "none";
           if (list) list.style.display = "none";
@@ -432,7 +396,7 @@
       });
     }
 
-    // --- Logic การแสดงผลไฟล์ (Highlight) ---
+    // --- Logic การโหลดไฟล์ ---
     function loadFileList() {
       fetch(`${serverUrl}/files?role=${currentRole}&username=${currentUser}`)
         .then((res) => res.json())
@@ -448,32 +412,23 @@
               </div>`;
             return;
           }
-          if(currentRole === 'user'){
-
-          }
-
-
 
           // === กรณีเป็น ADMIN: จัดกลุ่มตาม User ===
           if (currentRole === 'admin') {
-
-            // Hide Upload Section if it exists (Safety check)
+            // Admin: ซ่อน Toolbar ของ User, แสดง Search Admin
+            document.querySelector('.toolbar-container').classList.add("hidden"); 
             const uploadSection = document.getElementById("uploadSection");
             const searchSection = document.getElementById("adminSearchSection");
             if (uploadSection) uploadSection.classList.add("hidden");
             if (searchSection) searchSection.classList.remove("hidden");
 
-            // 1. Group Data
             const filesByUser = {};
             files.forEach(file => {
               const owner = file.OwnerUsername || "Unknown User";
-              if (!filesByUser[owner]) {
-                filesByUser[owner] = [];
-              }
+              if (!filesByUser[owner]) filesByUser[owner] = [];
               filesByUser[owner].push(file);
             });
 
-            // 2. Render Groups
             for (const [ownerName, userFiles] of Object.entries(filesByUser)) {
               const headerHTML = `
                 <div class="user-group-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
@@ -484,42 +439,98 @@
                   </span>
                   <i class="fas fa-chevron-down" style="margin-left: 10px;"></i>
                 </div>`;
-
-              // Grid List
               let fileListHTML = `<ul class="file-grid-view">`;
               userFiles.forEach(file => {
                 fileListHTML += generateFileHtml(file);
               });
               fileListHTML += `</ul>`;
-
               container.innerHTML += (headerHTML + fileListHTML);
             }
 
           } else {
-            // === กรณีเป็น USER: แสดงรายการเดียว ===
-            // Show Upload Section
+            // === กรณีเป็น USER ทั่วไป ===
+            
+            // 1. เก็บไฟล์ลงตัวแปร Global
+            allUserFiles = files;
+
+            // 2. จัดการ UI: แสดง Toolbar, ซ่อน Search Admin
+            document.querySelector('.toolbar-container').classList.remove("hidden"); // <--- เปิด Toolbar
             const uploadSection = document.getElementById("uploadSection");
             const searchSection = document.getElementById("adminSearchSection");
             if (uploadSection) uploadSection.classList.remove("hidden");
             if (searchSection) searchSection.classList.add("hidden");
 
-            let fileListHTML = `<ul class="file-grid-view">`;
-            files.forEach(file => {
-              fileListHTML += generateFileHtml(file);
-            });
-            fileListHTML += `</ul>`;
-            container.innerHTML = fileListHTML;
+            // 3. เรียก renderFiles เพื่อแสดงผล (พร้อม Filter)
+            renderFiles(); 
           }
         });
     }
-    
+
+    // --- 2. ฟังก์ชัน Render Files สำหรับ User (Filter & Sort) ---
+    function renderFiles() {
+        const container = document.getElementById("fileList");
+        const searchText = document.getElementById('fileSearchInput').value.toLowerCase();
+        const filterType = document.getElementById('filterType').value;
+        const sortOrder = document.getElementById('sortOrder').value;
+
+        // A. Filter Data
+        let filtered = allUserFiles.filter(file => {
+            const filename = file.filename.toLowerCase();
+            const ext = filename.split('.').pop();
+            
+            // Text Search
+            const matchesSearch = filename.includes(searchText);
+
+            // Type Filter
+            let matchesType = true;
+            if (filterType !== 'all') {
+                if (filterType === 'image') matchesType = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+                else if (filterType === 'document') matchesType = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'].includes(ext);
+                else if (filterType === 'media') matchesType = ['mp3', 'wav', 'mp4', 'mov', 'avi'].includes(ext);
+                else if (filterType === 'archive') matchesType = ['zip', 'rar', '7z'].includes(ext);
+            }
+
+            return matchesSearch && matchesType;
+        });
+
+        // B. Sort Data
+        filtered.sort((a, b) => {
+            const nameA = a.filename.toLowerCase();
+            const nameB = b.filename.toLowerCase();
+            
+            // เนื่องจาก API ตัวอย่างอาจไม่มี Date, เราจะใช้ Array Index แทน (assuming API returns oldest first)
+            // ถ้า API มี field created_at ให้ใช้ field นั้นแทน
+            if (sortOrder === 'az') return nameA.localeCompare(nameB);
+            if (sortOrder === 'za') return nameB.localeCompare(nameA);
+            if (sortOrder === 'newest') return -1; // สมมติว่า array มาเรียงตามเวลาอยู่แล้ว ให้กลับด้าน
+            if (sortOrder === 'oldest') return 1;
+            return 0;
+        });
+
+        // C. Render HTML
+        if (filtered.length === 0) {
+             container.innerHTML = `
+              <div style="text-align:center; padding: 40px; color:#94a3b8;">
+                <i class="fas fa-search fa-3x" style="margin-bottom:10px; opacity:0.5;"></i><br>
+                ไม่พบไฟล์ที่ค้นหา
+              </div>`;
+             return;
+        }
+
+        let fileListHTML = `<ul class="file-grid-view">`;
+        filtered.forEach(file => {
+            fileListHTML += generateFileHtml(file);
+        });
+        fileListHTML += `</ul>`;
+        container.innerHTML = fileListHTML;
+    }
+
 
     // --- Share / Visibility Modal ---
     let currentEditingFile = null;
 
     function openShareModal(ownerId, filename, isPublic, sharedWithStr) {
       currentEditingFile = { ownerId, filename };
-
       const modal = document.getElementById("shareModal");
       const title = document.getElementById("shareFileName");
       const publicCb = document.getElementById("publicCheckbox");
@@ -527,22 +538,16 @@
 
       title.innerText = filename;
       publicCb.checked = (isPublic === 'true');
-
-      // Parse sharedWithStr (which comes as a comma-separated string from the attribute)
       const sharedWith = sharedWithStr ? sharedWithStr.split(',') : [];
 
-      // Fetch Users
       fetch(`${serverUrl}/users`)
         .then(res => res.json())
         .then(users => {
           userListDiv.innerHTML = "";
-          // Filter out the owner from the list (can't share with self)
           const shareableUsers = users.filter(u => String(u.id) !== String(ownerId));
-
           if (shareableUsers.length === 0) {
             userListDiv.innerHTML = "<p style='color:#94a3b8; text-align:center;'>No other users to share with.</p>";
           }
-
           shareableUsers.forEach(u => {
             const isChecked = sharedWith.includes(String(u.id));
             const div = document.createElement("div");
@@ -553,8 +558,7 @@
              `;
             userListDiv.appendChild(div);
           });
-
-          togglePublicOption(); // Update UI state
+          togglePublicOption();
           modal.classList.remove("hidden");
         });
     }
@@ -578,7 +582,6 @@
 
     function saveShareSettings() {
       if (!currentEditingFile) return;
-
       const isPublic = document.getElementById("publicCheckbox").checked;
       const checkboxes = document.querySelectorAll(".user-share-checkbox:checked");
       const sharedWith = Array.from(checkboxes).map(cb => cb.value);
@@ -612,7 +615,6 @@
       const sharedWith = fileObj.sharedWith || [];
       const isOwner = String(ownerId) === String(currentId);
 
-      // Status Badge
       let statusBadge = "";
       if (currentRole === 'admin' || isOwner) {
         if (isPublic) {
@@ -624,16 +626,13 @@
 
       const previewUrl = `${serverUrl}/preview/${ownerId}/${f}`;
       const downloadUrl = `${serverUrl}/download/${ownerId}/${f}`;
-
       const ext = f.split('.').pop().toLowerCase();
       const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
 
       let thumbnailHtml = '';
-
       if (isImage) {
         thumbnailHtml = `<img src="${previewUrl}" class="file-thumb">`;
       } else {
-        // Icon Mapping
         let iconClass = "fa-file-alt";
         let iconColor = "#94a3b8";
         if (ext === 'pdf') { iconClass = "fa-file-pdf"; iconColor = "#ef4444"; }
@@ -642,21 +641,16 @@
         else if (['zip', 'rar', '7z'].includes(ext)) { iconClass = "fa-file-archive"; iconColor = "#8b5cf6"; }
         else if (['doc', 'docx'].includes(ext)) { iconClass = "fa-file-word"; iconColor = "#2563eb"; }
         else if (['xls', 'xlsx'].includes(ext)) { iconClass = "fa-file-excel"; iconColor = "#16a34a"; }
-
         thumbnailHtml = `<div class="file-icon" style="color: ${iconColor};"><i class="fas ${iconClass}"></i></div>`;
       }
 
-      // Action Buttons Logic
       let actionButtons = `
             <a href="${downloadUrl}" download class="btn-download">
               <i class="fas fa-download"></i> Download
             </a>`;
 
-      // Admin Controls: Share + Delete (No Eye Button)
       if (currentRole === 'admin') {
-        // Serialize sharedWith array to string for passing to onclick
         const sharedStr = sharedWith.join(',');
-
         actionButtons += `
             <div style="display:flex; gap:5px; margin-top:5px;">
                 <button onclick="openShareModal('${ownerId}', '${f}', '${isPublic}', '${sharedStr}')" 
@@ -681,7 +675,6 @@
             </div>
           `;
       } else {
-        // View Only
         actionButtons += `
             <div style="margin-top:5px; text-align:center; font-size:0.8rem; color:#64748b;">
                 <i class="fas fa-share-square"></i> Shared with you
@@ -722,18 +715,16 @@
       title.innerText = file.name;
       info.innerText = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
 
-      // รีเซ็ตค่า Style ของ Content กลับเป็นค่าเริ่มต้นก่อ
       content.innerHTML = '<div style="margin-top:50px;">⏳ Loading Preview...</div>';
       content.style.display = 'flex';
       content.style.justifyContent = 'center';
       content.style.alignItems = 'flex-start';
       content.style.overflowY = 'auto';
+      
       if (file.type === 'application/pdf') {
-
-        // บังคับให้เรียงลงมาเป็นแนวตั้ง
-        content.style.flexDirection = 'column';    // เรียงจากบนลงล่าง
-        content.style.justifyContent = 'flex-start'; // เริ่มจากขอบบนสุด
-        content.style.alignItems = 'center';       // จัดกึ่งกลางแนวนอน
+        content.style.flexDirection = 'column';
+        content.style.justifyContent = 'flex-start';
+        content.style.alignItems = 'center';
 
         try {
           const arrayBuffer = await file.arrayBuffer();
@@ -744,17 +735,13 @@
             const page = await pdf.getPage(pageNum);
             const scale = 1.0;
             const viewport = page.getViewport({ scale });
-
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.height = viewport.height;
             canvas.width = viewport.width;
-
-            // เว้นระยะห่างแต่ละหน้าหน่อย
             canvas.style.marginBottom = "20px";
             canvas.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
             canvas.style.maxWidth = "100%";
-
             await page.render({ canvasContext: context, viewport }).promise;
             content.appendChild(canvas);
           }
@@ -763,26 +750,19 @@
           content.innerHTML = `<div style="text-align:center; color:#ef4444; align-self:center;"><i class="fas fa-file-pdf fa-3x"></i><br>Error loading PDF</div>`;
         }
       }
-
-      // --- B. กรณีรูปภาพ (แก้ใหม่: พอดีจอเป๊ะ ห้ามเลื่อน) ---
       else if (file.type.startsWith('image/')) {
         const img = document.createElement('img');
         img.src = URL.createObjectURL(file);
-
         img.style.maxWidth = '100%';
         img.style.maxHeight = '100%';
         img.style.objectFit = 'contain';
-
         img.style.borderRadius = '8px';
         img.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-
         content.style.alignItems = 'center';
         content.style.overflow = 'hidden';
-
         content.innerHTML = '';
         content.appendChild(img);
       }
-
       else if (file.type.startsWith('video/')) {
         content.innerHTML = `
       <video controls style="max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -803,79 +783,44 @@
           Browser ของคุณไม่รองรับไฟล์เสียงนี้
         </audio>
       </div>`;
-
-        // จัดกึ่งกลาง
-        content.style.alignItems = 'flex-start'; // ให้เริ่มจากบนหน่อยจะได้ไม่ตกขอบ
+        content.style.alignItems = 'flex-start';
         content.style.overflow = 'hidden';
       }
-      // --- D. กรณีอื่นๆ ---
       else {
         let iconClass = "fa-file";
-        let iconColor = "#94a3b8"; // สีเทา (Default)
+        let iconColor = "#94a3b8";
         let typeLabel = "File";
-
         const name = file.name.toLowerCase();
-
-        // 1. Word
-        if (name.endsWith('.doc') || name.endsWith('.docx')) {
-          iconClass = "fa-file-word";
-          iconColor = "#2563eb"; // สีน้ำเงิน
-          typeLabel = "Microsoft Word";
-        }
-        // 2. Excel
-        else if (name.endsWith('.xls') || name.endsWith('.xlsx') || name.endsWith('.csv')) {
-          iconClass = "fa-file-excel";
-          iconColor = "#16a34a"; // สีเขียว
-          typeLabel = "Microsoft Excel";
-        }
-        // 3. PowerPoint
-        else if (name.endsWith('.ppt') || name.endsWith('.pptx')) {
-          iconClass = "fa-file-powerpoint";
-          iconColor = "#ea580c"; // สีส้ม
-          typeLabel = "Microsoft PowerPoint";
-        }
-        // 4. Zip / Archive
-        else if (name.endsWith('.zip') || name.endsWith('.rar') || name.endsWith('.7z')) {
-          iconClass = "fa-file-archive";
-          iconColor = "#9333ea"; // สีม่วง
-          typeLabel = "Archive File";
-        }
-        // 5. Text / Code
-        else if (name.endsWith('.txt') || name.endsWith('.js') || name.endsWith('.css') || name.endsWith('.html')) {
-          iconClass = "fa-file-code";
-          iconColor = "#64748b"; // สีเทาเข้ม
-          typeLabel = "Text / Code";
-        }
+        if (name.endsWith('.doc') || name.endsWith('.docx')) { iconClass = "fa-file-word"; iconColor = "#2563eb"; typeLabel = "Microsoft Word"; }
+        else if (name.endsWith('.xls') || name.endsWith('.xlsx') || name.endsWith('.csv')) { iconClass = "fa-file-excel"; iconColor = "#16a34a"; typeLabel = "Microsoft Excel"; }
+        else if (name.endsWith('.ppt') || name.endsWith('.pptx')) { iconClass = "fa-file-powerpoint"; iconColor = "#ea580c"; typeLabel = "Microsoft PowerPoint"; }
+        else if (name.endsWith('.zip') || name.endsWith('.rar') || name.endsWith('.7z')) { iconClass = "fa-file-archive"; iconColor = "#9333ea"; typeLabel = "Archive File"; }
+        else if (name.endsWith('.txt') || name.endsWith('.js') || name.endsWith('.css') || name.endsWith('.html')) { iconClass = "fa-file-code"; iconColor = "#64748b"; typeLabel = "Text / Code"; }
 
         content.innerHTML = `
       <div style="text-align:center; width:100%; margin-top:50px; display:flex; flex-direction:column; align-items:center;">
-        
         <div style="width:120px; height:120px; background:${iconColor}15; border-radius:20px; display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
            <i class="fas ${iconClass}" style="font-size: 5rem; color: ${iconColor};"></i>
         </div>
-
         <h3 style="margin:0 0 5px 0; color:#334155; word-break:break-all; max-width:80%;">${file.name}</h3>
         <span style="background:${iconColor}; color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:500;">
            ${typeLabel}
         </span>
-
         <p style="color:#94a3b8; font-size:0.9rem; margin-top:30px;">
            <i class="fas fa-info-circle"></i> No preview available for this file type
         </p>
       </div>`;
-
         content.style.alignItems = 'flex-start';
         content.style.overflow = 'hidden';
       }
     });
-    // 2. ฟังก์ชันปิด Modal (ยกเลิก)
+
     function closePreviewModal() {
       document.getElementById('previewModal').classList.add('hidden');
-      document.getElementById('fileInput').value = ""; // ล้างค่า Input เพื่อให้เลือกไฟล์เดิมซ้ำได้
+      document.getElementById('fileInput').value = "";
       selectedFile = null;
     }
 
-    // --- ส่วนที่เพิ่มใหม่: จัดการ Success Modal ---
     function showSuccessModal(msg) {
       const modal = document.getElementById('successModal');
       const msgEl = document.getElementById('successMessage');
@@ -887,16 +832,13 @@
       document.getElementById('successModal').classList.add('hidden');
     }
 
-    // --- แก้ไขฟังก์ชัน confirmUpload เดิม ---
     function confirmUpload() {
       if (!selectedFile) return;
-
       const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("ownerId", currentId);
       formData.append("ownerName", currentUser);
 
-      // เปลี่ยนปุ่มเป็น Loading
       const btn = document.querySelector('button[onclick="confirmUpload()"]');
       const originalText = btn.innerHTML;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading...`;
@@ -914,21 +856,14 @@
           showSuccessModal("อัปโหลดเรียบร้อย");
         })
         .catch(err => {
-          alert("❌ Upload Failed"); // Error เก็บเป็น alert ไว้ หรือจะทำ Error Modal ก็ได้
+          alert("❌ Upload Failed");
         })
         .finally(() => {
-          // คืนค่าปุ่มกลับมาเหมือนเดิม
           btn.innerHTML = originalText;
           btn.disabled = false;
         });
     }
-    // *** หมายเหตุ: อย่าลืมลบฟังก์ชัน uploadFile() ตัวเก่าทิ้ง หรือเปลี่ยนปุ่ม Upload เดิมให้ซ่อนไปเลยก็ได้ครับ ***
-
-    function cancelSelection() {
-      fileInput.value = "";
-      previewArea.innerHTML = "";
-      if (uploadBtn) uploadBtn.style.display = 'none';
-    }
+  
   </script>
 </body>
 
